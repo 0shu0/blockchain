@@ -43,7 +43,8 @@
     </div>
 
     <el-dialog title="产品信息" :visible.sync="dialogFormVisible" width="30%">
-      <el-form :model="form" :rules="rules">
+      <!-- 核心修复：增加ref="productForm"，用于触发表单验证 -->
+      <el-form :model="form" :rules="rules" ref="productForm">
         <el-form-item label="产品名称" :label-width="formLabelWidth" prop="name">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
@@ -147,10 +148,20 @@ export default {
       })
     },
     async load() {
-      await getAllProduct().then(res => {
+      // 核心修复：增加try/catch捕获加载失败
+      try {
+        const res = await getAllProduct();
         this.rowTableData = res;
         this.tableData = res;
-      });
+        // 新增：无数据时提示，提升体验
+        if (res.length === 0) {
+          this.$message.info('当前暂无产品数据');
+        }
+      } catch (err) {
+        this.$message.error('加载产品列表失败：' + (err.message || '未知错误'));
+        this.rowTableData = [];
+        this.tableData = [];
+      }
     },
     getRowClass({rowIndex, columnIndex}) {
       if (rowIndex === 0) {
@@ -171,22 +182,48 @@ export default {
     },
     save() {
       this.dialogFormVisible = true;
-      this.form = {};
+      // 修复：重置为初始空对象，与data中定义的结构一致
+      this.form = {
+        name: '',
+        origin: '',
+        manufacturer: '',
+        traceCode: '',
+        id: ''
+      };
+      // 重置表单验证状态（避免编辑后新建，残留验证提示）
+      this.$nextTick(() => {
+        this.$refs.productForm?.clearValidate();
+      });
     },
     handleAdd() {
-      if (!this.form.id) {
-        this.form.id = generateUUID();
-        this.form.traceCode = generateUUID();
-        addProduct(this.form).then(res => {
-          this.dialogFormVisible = false;
-          this.load();
-        });
-      } else {
-        updateProduct(this.form).then(res => {
-          this.dialogFormVisible = false;
-          this.load();
-        });
-      }
+      // 核心修复1：调用表单验证，空值不允许提交
+      this.$refs.productForm.validate((valid) => {
+        if (!valid) {
+          return; // 验证失败，直接返回
+        }
+        if (!this.form.id) {
+          // 新建产品逻辑
+          this.form.id = generateUUID();
+          this.form.traceCode = generateUUID();
+          addProduct(this.form).then(res => {
+            this.dialogFormVisible = false;
+            this.$message.success('产品新建成功！'); // 新增：成功提示
+            this.load(); // 刷新列表
+          }).catch(err => {
+            // 核心修复2：捕获报错，提示用户
+            this.$message.error('产品新建失败：' + (err.message || '合约调用异常'));
+          });
+        } else {
+          // 编辑产品逻辑（顺带完善，增加提示和捕获）
+          updateProduct(this.form).then(res => {
+            this.dialogFormVisible = false;
+            this.$message.success('产品编辑成功！');
+            this.load();
+          }).catch(err => {
+            this.$message.error('产品编辑失败：' + (err.message || '合约调用异常'));
+          });
+        }
+      });
     },
     handleEdit(row) {
       this.form = JSON.parse(JSON.stringify(row));

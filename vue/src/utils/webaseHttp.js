@@ -5,7 +5,7 @@ import router from "@/router";
 
 const webaseHttp = axios.create({
     baseURL:'http://localhost:8080/WeBASE-Front',
-    timeout:5000
+    timeout: 5000,
 })
 
 webaseHttp.interceptors.request.use(config => {
