@@ -1,32 +1,54 @@
+# Git 忽略文件配置
+# 此文件定义了 Git 版本控制系统应该忽略的文件和目录
+
+# 忽略项目生成的文档文件
 HELP.md
+
+# 忽略 Maven 构建目录
+# target/ 目录包含编译后的 class 文件和打包产物
+# 这些文件不需要纳入版本控制，因为它们可以通过构建重新生成
 target/
+
+# 但保留 Maven 包装器 jar 文件
+# Maven 包装器允许在没有全局安装 Maven 的情况下运行 Maven 命令
 !.mvn/wrapper/maven-wrapper.jar
+
+# 保留源代码目录下的 target 目录（如果存在）
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# ========== 集成开发环境（IDE）生成的文件 ==========
+
+# Spring Tool Suite (STS) 生成的文件
 ### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+.apt_generated       # APT 生成的文件
+.classpath          # 类路径配置文件
+.factorypath        # 工厂路径配置文件
+.project            # 项目配置文件
+.settings           # 设置目录
+.springBeans        # Spring Beans 配置
+.sts4-cache         # STS 4 缓存目录
 
+# IntelliJ IDEA 生成的文件
 ### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+.idea               # IDEA 项目配置目录
+*.iws               # IDEA 工作区配置文件
+*.iml               # IDEA 模块配置文件
+*.ipr               # IDEA 项目配置文件
 
+# NetBeans 生成的文件
 ### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
+/nbproject/private/ # NetBeans 私有配置
+/nbbuild/           # NetBeans 构建目录
+/dist/              # NetBeans 分发目录
+/nbdist/            # NetBeans 分发目录
+/.nb-gradle/        # NetBeans Gradle 插件配置
+
+build/              # NetBeans 构建目录
+# 但保留源代码目录下的 build 目录（如果存在）
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# Visual Studio Code 配置文件
 ### VS Code ###
+# VS Code 通常会生成 .vscode/ 目录，这里预留了配置位置

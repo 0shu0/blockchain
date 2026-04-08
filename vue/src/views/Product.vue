@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <div>
       <!-- 搜索栏 -->
       <el-input style="width: 200px;margin-right: 20px" placeholder="请输入产品名称" v-model="name"
@@ -10,12 +9,21 @@
     </div>
 
     <div style="margin-top:20px;margin-bottom: 20px;">
-      <!-- 新增。批量删除 -->
+      <!-- 新增按钮和批量删除按钮 -->
       <el-button style="margin-right: 10px;" type="success" class="el-icon-plus" @click="save">新增</el-button>
+      <el-popconfirm
+          confirm-button-text='确定'
+          cancel-button-text='取消'
+          icon="el-icon-info"
+          icon-color="red"
+          title="确定删除选中的产品吗？"
+          @confirm="deleteBatch"
+          @cancel="cancel">
+        <el-button slot="reference" type="danger" style="margin-left:5px;" class="el-icon-delete">批量删除</el-button>
+      </el-popconfirm>
     </div>
 
-    <el-table :data="tableData" border stripe :header-cell-style="getRowClass"
-              @selection-change="handleSelectionChange">
+    <el-table :data="tableData" border stripe :header-cell-style="getRowClass" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="name" label="产品名称"></el-table-column>
       <el-table-column prop="origin" label="产地"></el-table-column>
@@ -25,16 +33,6 @@
         <template slot-scope="scope">
           <el-button class="el-icon-edit" @click="showSendDialog(scope.row)">发货</el-button>
           <el-button type="primary" class="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-popconfirm
-              confirm-button-text='确定'
-              cancel-button-text='取消'
-              icon="el-icon-info"
-              icon-color="red"
-              title="确定删除这些数据吗？"
-              @confirm="handleDelete(scope.row.id)"
-              @cancel="cancel">
-            <el-button slot="reference" type="danger" style="margin-left:5px;" class="el-icon-delete">删除</el-button>
-          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -43,7 +41,6 @@
     </div>
 
     <el-dialog title="产品信息" :visible.sync="dialogFormVisible" width="30%">
-      <!-- 核心修复：增加ref="productForm"，用于触发表单验证 -->
       <el-form :model="form" :rules="rules" ref="productForm">
         <el-form-item label="产品名称" :label-width="formLabelWidth" prop="name">
           <el-input v-model="form.name" autocomplete="off"></el-input>
@@ -60,7 +57,8 @@
         <el-button type="primary" @click="handleAdd">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="发货" :visible.sync="sendDialogVisible" width="30%" >
+
+    <el-dialog title="发货" :visible.sync="sendDialogVisible" width="30%">
       <el-form :model="sendForm" :rules="sendRules" ref="sendForm">
         <el-form-item label="发货数量" :label-width="formLabelWidth" prop="amount">
           <el-input-number v-model="sendForm.amount" :min="1"></el-input-number>
@@ -75,9 +73,9 @@
 </template>
 
 <script>
-import {addProduct, deleteProduct, getAllProduct, updateProduct} from "@/http/Product";
-import {generateUUID} from "@/utils/uuid";
-import {addWarehouse} from "@/http/Warehouse";
+import { addProduct, getAllProduct, updateProduct, deleteProduct } from "@/http/Product";
+import { generateUUID } from "@/utils/uuid";
+import { addWarehouse } from "@/http/Warehouse";
 
 export default {
   name: "Product",
@@ -101,21 +99,21 @@ export default {
       },
       formLabelWidth: '80px',
       sendRow: {},
-      multipleSelection: [],
       total: 0,
+      multipleSelection: [],
       rules: {
         'name': [
-          {required: true, message: '请输入产品名称', trigger: 'blur'}
+          { required: true, message: '请输入产品名称', trigger: 'blur' }
         ],
         'origin': [
-          {required: true, message: '请输入产地', trigger: 'blur'}
+          { required: true, message: '请输入产地', trigger: 'blur' }
         ],
         'manufacturer': [
-          {required: true, message: '请输入厂家', trigger: 'blur'}
+          { required: true, message: '请输入厂家', trigger: 'blur' }
         ],
       },
       sendRules: {
-        'amount': [{required: true, message: '请输入发货数量', trigger: 'blur'}]
+        'amount': [{ required: true, message: '请输入发货数量', trigger: 'blur' }]
       }
     }
   },
@@ -129,32 +127,38 @@ export default {
     },
     handleSend(row) {
       this.$refs.sendForm.validate((valid) => {
-        if(!valid)
+        if (!valid) return;
+        // 检查产品是否为空或缺少必要字段
+        if (!this.sendRow || !this.sendRow.traceCode || !this.sendRow.origin || !this.sendRow.name) {
+          this.$message.error('产品信息不完整，无法发货');
           return;
+        }
         let params = {
-          id:generateUUID(),
+          id: generateUUID(),
           traceCode: this.sendRow.traceCode,
           productId: this.sendRow.traceCode,
           amount: this.sendForm.amount,
           sendDate: new Date().toLocaleString(),
           origin: this.sendRow.origin,
-          name:this.sendRow.name,
-          recvDate:''
+          name: this.sendRow.name,
+          recvDate: ''
         }
         addWarehouse(params).then(res => {
           this.$message.success('发货成功');
           this.sendDialogVisible = false;
+        }).catch(err => {
+          this.$message.error('发货失败：' + (err.message || '合约调用异常'));
         });
       })
     },
     async load() {
-      // 核心修复：增加try/catch捕获加载失败
       try {
         const res = await getAllProduct();
-        this.rowTableData = res;
-        this.tableData = res;
-        // 新增：无数据时提示，提升体验
-        if (res.length === 0) {
+        // 过滤掉空产品（缺少必要字段的产品）
+        const validProducts = res.filter(item => item.id && item.name && item.origin && item.traceCode);
+        this.rowTableData = validProducts;
+        this.tableData = validProducts;
+        if (validProducts.length === 0) {
           this.$message.info('当前暂无产品数据');
         }
       } catch (err) {
@@ -163,17 +167,16 @@ export default {
         this.tableData = [];
       }
     },
-    getRowClass({rowIndex, columnIndex}) {
+    getRowClass({ rowIndex, columnIndex }) {
       if (rowIndex === 0) {
         return 'background:#ccc'
       }
     },
-    async filterName(){
+    async filterName() {
       await this.load();
-      if(!this.name)
-        return;
+      if (!this.name) return;
       this.tableData = this.tableData.filter(item => {
-        return item.name==(this.name);
+        return item.name === this.name;
       });
     },
     reset() {
@@ -182,39 +185,30 @@ export default {
     },
     save() {
       this.dialogFormVisible = true;
-      // 修复：重置为初始空对象，与data中定义的结构一致
       this.form = {
         name: '',
         origin: '',
         manufacturer: '',
         traceCode: '',
-        id: ''
       };
-      // 重置表单验证状态（避免编辑后新建，残留验证提示）
       this.$nextTick(() => {
         this.$refs.productForm?.clearValidate();
       });
     },
     handleAdd() {
-      // 核心修复1：调用表单验证，空值不允许提交
       this.$refs.productForm.validate((valid) => {
-        if (!valid) {
-          return; // 验证失败，直接返回
-        }
-        if (!this.form.id) {
-          // 新建产品逻辑
-          this.form.id = generateUUID();
+        if (!valid) return;
+        if (!this.form.traceCode) {
           this.form.traceCode = generateUUID();
+          console.log("生成的traceCode：", this.form.traceCode);
           addProduct(this.form).then(res => {
             this.dialogFormVisible = false;
-            this.$message.success('产品新建成功！'); // 新增：成功提示
-            this.load(); // 刷新列表
+            this.$message.success('产品新建成功！');
+            this.load();
           }).catch(err => {
-            // 核心修复2：捕获报错，提示用户
             this.$message.error('产品新建失败：' + (err.message || '合约调用异常'));
           });
         } else {
-          // 编辑产品逻辑（顺带完善，增加提示和捕获）
           updateProduct(this.form).then(res => {
             this.dialogFormVisible = false;
             this.$message.success('产品编辑成功！');
@@ -229,37 +223,8 @@ export default {
       this.form = JSON.parse(JSON.stringify(row));
       this.dialogFormVisible = true;
     },
-    handleDelete(id) {
-      if (id) {
-        deleteProduct(id).then(res => {
-          this.load();
-        });
-      } else {
-        this.$message.error('没有id信息，无法删除');
-      }
-    },
     cancel() {
       this.$message.success('取消操作成功');
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
-    deleteBatch() {
-      // 批量删除数据
-      if (this.multipleSelection.length === 0) {
-        this.$message.warning("请先选择要删除的数据");
-        return
-      }
-      const ids = this.multipleSelection.map(v => v.id);
-      this.request.post('/product/deleteBatch', ids).then(res => {
-        if (res.code === '200') {
-          this.$message.success('批量删除成功');
-          this.handleCalPageNum();
-        } else {
-          let msg = res.msg;
-          this.$message.error(msg);
-        }
-      })
     },
     handleSizeChange(val) {
       this.pageSize = val;
@@ -284,11 +249,36 @@ export default {
         }
         this.load();
       })
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    deleteBatch() {
+      if (this.multipleSelection.length === 0) {
+        this.$message.warning("请先选择要删除的产品");
+        return;
+      }
+      // 过滤掉空产品（没有id的产品）
+      const validProducts = this.multipleSelection.filter(v => v.id);
+      if (validProducts.length === 0) {
+        this.$message.warning("所选产品中没有有效的产品ID");
+        return;
+      }
+      const ids = validProducts.map(v => v.id);
+      // 批量删除产品
+      Promise.all(ids.map(id => deleteProduct(id))).then(() => {
+        this.$message.success('批量删除成功');
+        this.load();
+      }).catch(err => {
+        this.$message.error('批量删除失败：' + (err.message || '合约调用异常'));
+      });
+    },
+    cancel() {
+      this.$message.success('取消操作成功');
     }
   }
 }
 </script>
 
 <style scoped>
-
 </style>

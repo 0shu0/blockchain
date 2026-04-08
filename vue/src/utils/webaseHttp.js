@@ -4,16 +4,12 @@ import ElementUI from 'element-ui'
 import router from "@/router";
 
 const webaseHttp = axios.create({
-    baseURL:'http://localhost:8080/WeBASE-Front',
+    baseURL:'',
     timeout: 5000,
 })
 
 webaseHttp.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=UTF-8'
-    // let user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null
-    // if(user){
-    //     config.headers["token"] = user.token;
-    // }
     return config;
 },error => {
     return Promise.reject(error)
@@ -32,7 +28,7 @@ webaseHttp.interceptors.response.use(
         }
         catch (e) {
             if(res.hasOwnProperty('errorMessage') || res.code==201151
-            ||res.data[0]?.indexOf("error")>0){
+                ||res.data[0]?.indexOf("error")>0){
                 data = res.data[0] || "未知错误";
                 ElementUI.Message({
                     message: data,

@@ -1,15 +1,16 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
-  lintOnSave:false,
+  lintOnSave: false,
   devServer: {
+    host: '0.0.0.0',
+    port: 8080,
+    historyApiFallback: true,
     proxy: {
       '/WeBASE-Front': {
-        target: 'http://192.168.217.141:5002', // 目标地址
-        changeOrigin: true, // 是否更改源
-        pathRewrite: {
-          '^/WeBASE-Front': '/WeBASE-Front/trans/handle' // 路径重写
-        }
+        target: 'http://192.168.88.133:5002',
+        changeOrigin: true,
+        timeout: 60000,
       }
     }
   }

@@ -11,7 +11,7 @@ export function addProduct(params) {
         "contractPath": "Product",
         "version": "",
         "funcName": "addObject",
-        "funcParam": [ params.traceCode ,params.origin ,params.name ,params.id ,params.manufacturer],
+        "funcParam": [params.traceCode, params.origin, params.name, params.manufacturer],
         "contractAddress": contractAddress,
         "contractAbi": [{
             "constant": false,
@@ -19,7 +19,6 @@ export function addProduct(params) {
                 {"name": "_traceCode", "type": "string", "value": params.traceCode},
                 {"name": "_origin", "type": "string", "value": params.origin},
                 {"name": "_name", "type": "string", "value": params.name},
-                {"name": "_id", "type": "string", "value": params.id},
                 {"name": "_manufacturer", "type": "string", "value": params.manufacturer}
             ],
             "name": "addObject",
@@ -33,44 +32,15 @@ export function addProduct(params) {
         "useCns": false,
         "cnsName": ""
     }
-    // 🔴 关键修改：在post请求里加 { timeout: 30000 }，单独设置30秒超时
-    return webaseHttp.post('/', pam, { timeout: 30000 })
+    console.log("提交参数：", pam);
+    return webaseHttp.post('/WeBASE-Front/trans/handle', pam, { timeout: 30000 })
         .then(res => {
-            console.log("新建产品合约调用成功：", res);
-            return res;
+            console.log("交易提交成功：", res);
+            return res.data;
         }).catch(err => {
-            console.error("新建产品失败-合约/请求报错：", err);
+            console.error("交易失败：", err);
             throw err;
-        })
-}
-
-export function deleteProduct(id) {
-    let pam = {
-        "groupId": "1",
-        "user": user,
-        "contractName": "Trace",
-        "contractPath": "Product",
-        "version": "",
-        "funcName": "deleteObject",
-        "funcParam": [id],
-        "contractAddress": contractAddress,
-        "contractAbi": [{
-            "constant": false,
-            "inputs": [{"name": "_id", "type": "string", "value": id}],
-            "name": "deleteObject",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function",
-            "funcId": 2
-        }],
-        "useAes": false,
-        "useCns": false,
-        "cnsName": ""
-    }
-    return webaseHttp.post('/', pam).then(res => {
-        return res;
-    });
+        });
 }
 
 export function getAllProduct() {
@@ -92,7 +62,6 @@ export function getAllProduct() {
                     {"name": "traceCode", "type": "string"},
                     {"name": "origin", "type": "string"},
                     {"name": "name", "type": "string"},
-                    {"name": "id", "type": "string"},
                     {"name": "manufacturer", "type": "string"}
                 ], "name": "", "type": "tuple[]"
             }],
@@ -105,56 +74,15 @@ export function getAllProduct() {
         "useCns": false,
         "cnsName": ""
     };
-    return webaseHttp.post('/', params).then(res => {
-        // 核心修复：判断res是否为数组，非数组返回空数组，避免map报错
-        if (!Array.isArray(res)) {
-            console.warn("合约返回非数组格式：", res);
+    return webaseHttp.post('/WeBASE-Front/trans/handle', params, { timeout: 30000 })
+        .then(res => {
+            if (!Array.isArray(res)) return [];
+            return res.map(item => cvtRes(item));
+        })
+        .catch(err => {
+            console.error("加载产品列表失败：", err);
             return [];
-        }
-        let objs = res.map(item => {
-            return cvtRes(item);
         });
-        return objs;
-    }).catch(err => {
-        // 新增：捕获请求/合约报错，打印日志并返回空数组，避免页面卡死
-        console.error("获取产品列表失败：", err);
-        return [];
-    });
-}
-
-export function getProductById(id) {
-    let params = {
-        "groupId": "1",
-        "user": user,
-        "contractName": "Trace",
-        "contractPath": "Product",
-        "version": "",
-        "funcName": "getObjectById",
-        "funcParam": [id],
-        "contractAddress": contractAddress,
-        "contractAbi": [{
-            "constant": true,
-            "inputs": [{"name": "_id", "type": "string", "value": id}],
-            "name": "getObjectById",
-            "outputs": [{
-                "components": [{"name": "traceCode", "type": "string"}, {
-                    "name": "origin", "type": "string"
-                }, {"name": "name", "type": "string"}, {"name": "id", "type": "string"}, {
-                    "name": "manufacturer", "type": "string"
-                }], "name": "", "type": "tuple"
-            }],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function",
-            "funcId": 1
-        }],
-        "useAes": false,
-        "useCns": false,
-        "cnsName": ""
-    };
-    return webaseHttp.post('/', params).then(res => {
-        return res;
-    })
 }
 
 export function getProductByCode(id) {
@@ -172,11 +100,12 @@ export function getProductByCode(id) {
             "inputs": [{"name": "_code", "type": "string", "value": id}],
             "name": "getObjectByCode",
             "outputs": [{
-                "components": [{"name": "traceCode", "type": "string"}, {
-                    "name": "origin", "type": "string"
-                }, {"name": "name", "type": "string"}, {"name": "id", "type": "string"}, {
-                    "name": "manufacturer", "type": "string"
-                }], "name": "", "type": "tuple"
+                "components": [
+                    {"name": "traceCode", "type": "string"},
+                    {"name": "origin", "type": "string"},
+                    {"name": "name", "type": "string"},
+                    {"name": "manufacturer", "type": "string"}
+                ], "name": "", "type": "tuple"
             }],
             "payable": false,
             "stateMutability": "view",
@@ -187,7 +116,7 @@ export function getProductByCode(id) {
         "useCns": false,
         "cnsName": ""
     };
-    return webaseHttp.post('/', params).then(res => {
+    return webaseHttp.post('/WeBASE-Front/trans/handle', params).then(res => {
         return cvtRes(res);
     })
 }
@@ -200,15 +129,16 @@ export function updateProduct(params) {
         "contractPath": "Product",
         "version": "",
         "funcName": "updateObject",
-        "funcParam": [params.traceCode, params.origin, params.name, params.id, params.manufacturer],
+        "funcParam": [params.traceCode, params.origin, params.name, params.manufacturer],
         "contractAddress": contractAddress,
         "contractAbi": [{
             "constant": false,
-            "inputs": [{"name": "_traceCode", "type": "string", "value": params.traceCode}, {
-                "name": "_origin", "type": "string", "value": params.origin
-            }, {"name": "_name", "type": "string", "value": params.name}, {
-                "name": "_id", "type": "string", "value": params.id
-            }, {"name": "_manufacturer", "type": "string", "value": params.manufacturer}],
+            "inputs": [
+                {"name": "_traceCode", "type": "string", "value": params.traceCode},
+                {"name": "_origin", "type": "string", "value": params.origin},
+                {"name": "_name", "type": "string", "value": params.name},
+                {"name": "_manufacturer", "type": "string", "value": params.manufacturer}
+            ],
             "name": "updateObject",
             "outputs": [],
             "payable": false,
@@ -220,13 +150,46 @@ export function updateProduct(params) {
         "useCns": false,
         "cnsName": ""
     };
-    return webaseHttp.post('/', pam).then(res => {
+    return webaseHttp.post('/WeBASE-Front/trans/handle', pam).then(res => {
         return res;
     });
 }
 
+export function deleteProduct(id) {
+    let params = {
+        "groupId": "1",
+        "user": user,
+        "contractName": "Trace",
+        "contractPath": "Product",
+        "version": "",
+        "funcName": "deleteObject",
+        "funcParam": [id],
+        "contractAddress": contractAddress,
+        "contractAbi": [{
+            "constant": false,
+            "inputs": [{"name": "_id", "type": "string", "value": id}],
+            "name": "deleteObject",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function",
+            "funcId": 2
+        }],
+        "useAes": false,
+        "useCns": false,
+        "cnsName": ""
+    };
+    return webaseHttp.post('/WeBASE-Front/trans/handle', params, { timeout: 30000 })
+        .then(res => {
+            console.log("删除产品成功：", res);
+            return res.data;
+        }).catch(err => {
+            console.error("删除产品失败：", err);
+            throw err;
+        });
+}
+
 function cvtRes(item) {
-    // 修复：判断item是否为数组/存在，避免item[0]报错
     if (!Array.isArray(item)) {
         console.warn("合约返回非数组item：", item);
         return { traceCode: '', origin: '', name: '', id: '', manufacturer: '' };

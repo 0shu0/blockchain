@@ -11,7 +11,7 @@
 
     <el-dropdown style="width: 150px;cursor: pointer;text-align: center">
       <div style="display: inline-block">
-        <img :src="user.headerUrl" style="width:65px;height:45px;border-radius: 50%;position: relative;top:10px;right:8px"/>
+        <img :src="avatarUrl" style="width:65px;height:45px;border-radius: 50%;position: relative;top:10px;right:8px"/>
         <el-tooltip  effect="dark" placement="top" :content="user.username">
           <span>{{ truncatedText }}</span>
           <i class="el-icon-arrow-down" style="margin-left:5px"></i>
@@ -52,6 +52,15 @@ export default {
     },
     currentPathName(){
       return this.$store.state.currentPathName;
+    },
+    avatarUrl() {
+      // 如果用户有设置头像，则使用用户的头像
+      if (this.user.headerUrl && this.user.headerUrl !== '') {
+        return this.user.headerUrl;
+      }
+      // 否则使用默认头像，从file目录中选择
+      // 这里使用一个默认的头像路径，可以根据实际情况修改
+      return 'http://localhost:8888/file/猫.png';
     }
   },
   methods:{

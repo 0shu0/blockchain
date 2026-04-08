@@ -14,12 +14,30 @@
  Date: 08/12/2024 16:12:41
 */
 
+-- ===============================================================
+-- 数据库初始化脚本
+-- 文件名: graduation_framework.sql
+-- 描述: 区块链农产品溯源系统的数据库表结构和初始数据
+-- 包含表: notice, product, shop, sys_dict, sys_file, sys_log
+-- 系统功能: 基于区块链技术的农产品溯源管理系统
+-- ===============================================================
+
+-- 设置字符集为 utf8mb4，支持中文等多语言
 SET NAMES utf8mb4;
+-- 暂时禁用外键约束检查，加快导入速度
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
 -- Table structure for notice
 -- ----------------------------
+-- 公告表
+-- 用途: 存储系统公告信息，如活动通知、重要事项等
+-- 字段说明:
+--   id: 自增主键，唯一标识
+--   title: 公告标题，不能为空
+--   content: 公告内容，不能为空，最大长度1000字符
+--   user: 创建者，可为空
+--   create_time: 创建时间，默认当前时间戳
 DROP TABLE IF EXISTS `notice`;
 CREATE TABLE `notice`  (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -33,17 +51,26 @@ CREATE TABLE `notice`  (
 -- ----------------------------
 -- Records of notice
 -- ----------------------------
-INSERT INTO `notice` VALUES (1, '大学生参赛通知1', '编程比赛报名开', 'admin', '2023-09-10 11:39:40');
-INSERT INTO `notice` VALUES (2, '12', '12', 'user', '2023-09-12 06:57:44');
-INSERT INTO `notice` VALUES (4, '奖学金', '奖学金开始发放', 'admin', '2023-09-12 12:42:54');
-INSERT INTO `notice` VALUES (5, '编程比赛', '项目开始', 'admin', '2023-09-12 12:43:07');
-INSERT INTO `notice` VALUES (6, '毕设开始', '毕设项目', 'admin', '2023-09-12 12:43:16');
-INSERT INTO `notice` VALUES (7, '11', '11', 'admin', '2023-09-12 12:43:20');
-INSERT INTO `notice` VALUES (8, '2212', '编程比赛报名开始，有意向者尽快报名参加 比赛时间 比赛地点 比赛规则 编程比赛报名开始，有意向者尽快报名参加 比赛时间 比赛地点 比赛规则编程比赛报名开始，有意向者尽快报名参加 比赛时间 比赛地点 比赛规则 编程比赛报名开始，有意向者尽快报名参加 比赛时间 比赛地点 比赛规则 编程比赛报名开始，有意向者尽快报名参加 比赛时间 比赛地点', 'admin', '2023-09-12 12:43:22');
+-- 区块链农产品溯源系统相关公告
+INSERT INTO `notice` VALUES (1, '区块链农产品溯源系统上线通知', '我司基于区块链技术的农产品溯源系统正式上线，该系统可实现农产品从种植、加工、运输到销售的全流程追溯，确保食品安全。', 'admin', '2023-09-10 11:39:40');
+INSERT INTO `notice` VALUES (2, '农产品区块链溯源技术培训', '将于本周五举办区块链农产品溯源技术培训，主要内容包括区块链原理、溯源流程操作、数据上链等，欢迎相关人员参加。', 'admin', '2023-09-12 06:57:44');
+INSERT INTO `notice` VALUES (3, '区块链溯源系统功能更新', '系统已更新，新增农产品生长环境监测数据上链功能，可实时查看农产品的种植环境数据，如温度、湿度、光照等。', 'admin', '2023-09-12 12:42:54');
+INSERT INTO `notice` VALUES (4, '农产品溯源码使用说明', '所有农产品包装上已添加区块链溯源码，消费者可通过扫描二维码查看产品的详细信息，包括产地、种植过程、检测报告等。', 'admin', '2023-09-12 12:43:07');
+INSERT INTO `notice` VALUES (5, '区块链技术在农业中的应用研讨会', '下周将举办区块链技术在农业中的应用研讨会，探讨如何利用区块链技术提升农业生产效率和农产品安全性。', 'admin', '2023-09-12 12:43:16');
+INSERT INTO `notice` VALUES (6, '系统维护通知', '本周末系统将进行维护升级，期间可能会短暂影响系统使用，请提前做好相关准备。', 'admin', '2023-09-12 12:43:20');
+INSERT INTO `notice` VALUES (7, '农产品溯源数据标准更新', '根据最新行业标准，系统已更新农产品溯源数据标准，确保数据的准确性和一致性。', 'admin', '2023-09-12 12:43:22');
 
 -- ----------------------------
 -- Table structure for product
 -- ----------------------------
+-- 产品表
+-- 用途: 存储产品基本信息，用于产品溯源系统
+-- 字段说明:
+--   id: 产品ID，字符串类型，不能为空，作为主键
+--   name: 产品名称，不能为空
+--   origin: 产地，不能为空
+--   manufacturer: 厂家，不能为空
+--   traceCode: 溯源码，不能为空，用于产品追溯
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product`  (
   `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -57,10 +84,28 @@ CREATE TABLE `product`  (
 -- ----------------------------
 -- Records of product
 -- ----------------------------
+-- 区块链农产品溯源系统产品数据
+INSERT INTO `product` VALUES ('P001', '有机大米', '黑龙江五常', '五常有机农业合作社', 'BLOCKCHAIN_20230901_001');
+INSERT INTO `product` VALUES ('P002', '绿色蔬菜', '山东寿光', '寿光绿色蔬菜基地', 'BLOCKCHAIN_20230902_002');
+INSERT INTO `product` VALUES ('P003', '生态水果', '陕西洛川', '洛川苹果种植园', 'BLOCKCHAIN_20230903_003');
+INSERT INTO `product` VALUES ('P004', '有机猪肉', '河南漯河', '漯河生态养殖基地', 'BLOCKCHAIN_20230904_004');
+INSERT INTO `product` VALUES ('P005', '有机鸡蛋', '河北唐山', '唐山有机养殖场', 'BLOCKCHAIN_20230905_005');
 
 -- ----------------------------
 -- Table structure for shop
 -- ----------------------------
+-- 商品表
+-- 用途: 存储商品的详细信息，包括物流和交易信息
+-- 字段说明:
+--   id: 商品ID，字符串类型，不能为空，作为主键
+--   listDate: 上架日期
+--   traceCode: 溯源码，与产品表关联
+--   amount: 数量
+--   sendDate: 发货日期
+--   price: 价格
+--   origin: 产地
+--   name: 商品名称
+--   recvDate: 收货日期
 DROP TABLE IF EXISTS `shop`;
 CREATE TABLE `shop`  (
   `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -78,10 +123,24 @@ CREATE TABLE `shop`  (
 -- ----------------------------
 -- Records of shop
 -- ----------------------------
+-- 区块链农产品溯源系统商品数据
+INSERT INTO `shop` VALUES ('S001', '2023-09-01', 'BLOCKCHAIN_20230901_001', '1000', '2023-09-02', '128', '黑龙江五常', '有机大米', '2023-09-03');
+INSERT INTO `shop` VALUES ('S002', '2023-09-02', 'BLOCKCHAIN_20230902_002', '500', '2023-09-03', '25', '山东寿光', '绿色蔬菜', '2023-09-04');
+INSERT INTO `shop` VALUES ('S003', '2023-09-03', 'BLOCKCHAIN_20230903_003', '300', '2023-09-04', '88', '陕西洛川', '生态水果', '2023-09-05');
+INSERT INTO `shop` VALUES ('S004', '2023-09-04', 'BLOCKCHAIN_20230904_004', '200', '2023-09-05', '158', '河南漯河', '有机猪肉', '2023-09-06');
+INSERT INTO `shop` VALUES ('S005', '2023-09-05', 'BLOCKCHAIN_20230905_005', '1000', '2023-09-06', '12', '河北唐山', '有机鸡蛋', '2023-09-07');
 
 -- ----------------------------
 -- Table structure for sys_dict
 -- ----------------------------
+-- 系统字典表
+-- 用途: 存储系统中的字典数据，如图标、类型等配置信息
+-- 字段说明:
+--   id: 自增主键，唯一标识
+--   name: 字典名称，不能为空
+--   value: 字典值，不能为空
+--   type: 字典类型，不能为空
+-- 示例: 存储图标类型数据，如 el-icon-user 等
 DROP TABLE IF EXISTS `sys_dict`;
 CREATE TABLE `sys_dict`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -378,6 +437,17 @@ INSERT INTO `sys_dict` VALUES (280, 'ice-cream-round', 'el-icon-ice-cream-round'
 -- ----------------------------
 -- Table structure for sys_file
 -- ----------------------------
+-- 系统文件表
+-- 用途: 存储系统上传的文件信息，如图片、文档等
+-- 字段说明:
+--   id: 自增主键，唯一标识
+--   name: 文件名称
+--   type: 文件类型，如 png、pdf 等
+--   size: 文件大小，单位为 KB
+--   url: 文件下载链接
+--   md5: 文件MD5值，用于判断文件唯一性
+--   is_delete: 删除状态，0：未删除，1：已删除
+--   enable: 启用状态，0：未启用，1：启用
 DROP TABLE IF EXISTS `sys_file`;
 CREATE TABLE `sys_file`  (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -394,81 +464,66 @@ CREATE TABLE `sys_file`  (
 -- ----------------------------
 -- Records of sys_file
 -- ----------------------------
-INSERT INTO `sys_file` VALUES (7, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/cdb8505ced6648d0b85015242eda6cf2.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 0);
-INSERT INTO `sys_file` VALUES (8, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/cdb8505ced6648d0b85015242eda6cf2.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (9, '文件下载1111.pdf', 'pdf', 34742, 'http://localhost:8888/sysFile/3a63e87f400840fbb9226113b5b44d93.pdf', '2ed3d62ef431f3d883ea426f24715032', 1, 1);
-INSERT INTO `sys_file` VALUES (10, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/a970dbe4d7d9478b9e9a02ef03be6703.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (11, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/a970dbe4d7d9478b9e9a02ef03be6703.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (12, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/a970dbe4d7d9478b9e9a02ef03be6703.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (13, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/68181767ccb6427e8af986539357a55d.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (14, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/68181767ccb6427e8af986539357a55d.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (15, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/68181767ccb6427e8af986539357a55d.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (16, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/a970dbe4d7d9478b9e9a02ef03be6703.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (17, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/68181767ccb6427e8af986539357a55d.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (18, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/a970dbe4d7d9478b9e9a02ef03be6703.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (19, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/ec8145fdf8264e11a3525b6c1b1d36d4.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (20, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/397f47924d394ff3b2085ad0d3e81e00.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (21, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/ec8145fdf8264e11a3525b6c1b1d36d4.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (22, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/ec8145fdf8264e11a3525b6c1b1d36d4.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (23, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/ec8145fdf8264e11a3525b6c1b1d36d4.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (24, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/ec8145fdf8264e11a3525b6c1b1d36d4.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (25, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/ec8145fdf8264e11a3525b6c1b1d36d4.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (26, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/eb403e5a621341a1a7b66340814b0b4d.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (27, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/eb403e5a621341a1a7b66340814b0b4d.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (28, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (29, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (30, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/eb403e5a621341a1a7b66340814b0b4d.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (31, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (32, 'background.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (33, 'background.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (34, 'background.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (35, '权限脚手架项目.xmind', 'xmind', 228, 'http://localhost:8888/sysFile/b84ff87b2d814526be8479ac2ad9efa7.xmind', '7aaa05c0e65569b4edd8fcb801ed5a54', 1, 1);
-INSERT INTO `sys_file` VALUES (36, 'background.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (37, 'background.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (38, 'background.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (39, 'background.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (40, 'background.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (41, 'background.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (42, 'success.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (43, 'testWeb.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (44, '28ecfcd2e00a46818473b143a930d225.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (45, 'a970dbe4d7d9478b9e9a02ef03be6703.png', 'png', 150, 'http://localhost:8888/sysFile/eb403e5a621341a1a7b66340814b0b4d.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (46, '28ecfcd2e00a46818473b143a930d225.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (47, 'a970dbe4d7d9478b9e9a02ef03be6703.png', 'png', 150, 'http://localhost:8888/sysFile/eb403e5a621341a1a7b66340814b0b4d.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (48, '28ecfcd2e00a46818473b143a930d225.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (49, '82fbe2ff0bfd4d5e8c705398ee1c7768.jpg', 'jpg', 190, 'http://localhost:8888/sysFile/825b9e06097548f49a33d5fb8f6c3c02.jpg', 'd0c89de5c0fec38a2453a659500c7fc6', 1, 1);
-INSERT INTO `sys_file` VALUES (50, '68181767ccb6427e8af986539357a55d.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (51, '28ecfcd2e00a46818473b143a930d225.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (52, 'success.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (53, 'success.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (54, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/eb403e5a621341a1a7b66340814b0b4d.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (55, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (56, 'background.png', 'png', 149, 'http://localhost:8888/sysFile/28ecfcd2e00a46818473b143a930d225.png', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
-INSERT INTO `sys_file` VALUES (57, 'success.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (58, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/eb403e5a621341a1a7b66340814b0b4d.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (59, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/eb403e5a621341a1a7b66340814b0b4d.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (60, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (61, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (62, '47ed8c575db9487e93a4260ae291d050.jpg', 'jpg', 190, 'http://localhost:8888/sysFile/825b9e06097548f49a33d5fb8f6c3c02.jpg', 'd0c89de5c0fec38a2453a659500c7fc6', 1, 1);
-INSERT INTO `sys_file` VALUES (63, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/eb403e5a621341a1a7b66340814b0b4d.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (64, '图片1.png', 'png', 418, 'http://localhost:8888/sysFile/912b7bea3ac246a49f7da1e2adedc6ff.png', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
-INSERT INTO `sys_file` VALUES (65, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/eb403e5a621341a1a7b66340814b0b4d.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (66, 'vue.png', 'png', 150, 'http://localhost:8888/sysFile/eb403e5a621341a1a7b66340814b0b4d.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
-INSERT INTO `sys_file` VALUES (67, 'learning.png', 'png', 64, 'http://localhost:8888/sysFile/2b5f0610b51d40bfa80837d914d70813.png', '3a9988addd4555fc7232d3a068b73b9c', 1, 1);
-INSERT INTO `sys_file` VALUES (68, 'learning.png', 'png', 64, 'http://localhost:8888/sysFile/2b5f0610b51d40bfa80837d914d70813.png', '3a9988addd4555fc7232d3a068b73b9c', 1, 1);
-INSERT INTO `sys_file` VALUES (69, '7.png', 'png', 230, 'http://localhost:8888/sysFile/14f0a7329ac348e4bc20dd1cf1306872.png', '8746bd3582a01e93ec6c2167986ce935', 1, 1);
-INSERT INTO `sys_file` VALUES (70, '在线办公系统.xmind', 'xmind', 232, 'http://localhost:8888/sysFile/5e662694a68e484db038c4e8d44fea0c.xmind', 'd28bde3177efd4f6a0e45e0ec3559362', 1, 1);
-INSERT INTO `sys_file` VALUES (71, 'logo.jpg', 'jpg', 4, 'http://localhost:8888/sysFile/3a826440285a4f4cb489677592629841.jpg', '54e81fb10b52f93ca441c62465b18b2e', 1, 1);
-INSERT INTO `sys_file` VALUES (72, 'background.png', 'png', 186, 'http://localhost:8888/sysFile/5f3913c831824fcdb752b65d13b8f945.png', '4c162db144a70b876ecaed2066a31c41', 1, 1);
-INSERT INTO `sys_file` VALUES (73, 'background.png', 'png', 186, 'http://localhost:8888/sysFile/5f3913c831824fcdb752b65d13b8f945.png', '4c162db144a70b876ecaed2066a31c41', 1, 1);
-INSERT INTO `sys_file` VALUES (74, 'logo1.png', 'png', 7, 'http://localhost:8888/sysFile/1715338951398-logo1.png', '34ef6a22d96758e116001241f292f26c', 1, 1);
-INSERT INTO `sys_file` VALUES (75, 'auth.jpg', 'jpg', 16, 'http://localhost:8888/sysFile/1715338998303-auth.jpg', '34ce47a278ab155b4dce2d94f6a6dd2e', 1, 1);
-INSERT INTO `sys_file` VALUES (76, 'register.png', 'png', 28, 'http://localhost:8888/sysFile/1715339011542-register.png', '94706d763eee27eaabaaf7f03950e0ef', 1, 1);
-INSERT INTO `sys_file` VALUES (77, 'lunbo4.png', 'png', 23, 'http://localhost:8888/sysFile/1716113809850-lunbo4.png', '9f7e5c2ec10f4b388c77f2791887e4d4', 0, 1);
+-- 区块链农产品溯源系统文件数据
+INSERT INTO `sys_file` VALUES (7, '区块链农产品溯源系统使用手册.pdf', 'pdf', 34742, 'http://localhost:8888/sysFile/blockchain_manual.pdf', 'e23a6f83c7bdd311ad27c3d2702c8f23', 1, 1);
+INSERT INTO `sys_file` VALUES (8, '有机大米种植流程图.png', 'png', 418, 'http://localhost:8888/sysFile/rice_planting.png', 'd68fb00dae6dbb72dd541c3678b662f3', 1, 1);
+INSERT INTO `sys_file` VALUES (9, '区块链技术在农业中的应用.pptx', 'pptx', 56789, 'http://localhost:8888/sysFile/blockchain_agriculture.pptx', '2ed3d62ef431f3d883ea426f24715032', 1, 1);
+INSERT INTO `sys_file` VALUES (10, '农产品溯源码生成规范.pdf', 'pdf', 12345, 'http://localhost:8888/sysFile/trace_code_spec.pdf', '1944e19dc424c426bfb599b36b61c2c8', 1, 1);
+INSERT INTO `sys_file` VALUES (11, '系统架构图.png', 'png', 150, 'http://localhost:8888/sysFile/system_architecture.png', '3a9988addd4555fc7232d3a068b73b9c', 1, 1);
+INSERT INTO `sys_file` VALUES (12, '有机蔬菜检测报告.pdf', 'pdf', 23456, 'http://localhost:8888/sysFile/vegetable_test_report.pdf', '8746bd3582a01e93ec6c2167986ce935', 1, 1);
+INSERT INTO `sys_file` VALUES (13, '区块链农产品溯源系统logo.png', 'png', 7, 'http://localhost:8888/sysFile/blockchain_logo.png', '34ef6a22d96758e116001241f292f26c', 1, 1);
+INSERT INTO `sys_file` VALUES (14, '生态水果种植基地照片.jpg', 'jpg', 190, 'http://localhost:8888/sysFile/fruit_farm.jpg', 'd0c89de5c0fec38a2453a659500c7fc6', 1, 1);
+INSERT INTO `sys_file` VALUES (15, '系统操作培训视频.mp4', 'mp4', 123456, 'http://localhost:8888/sysFile/system_training.mp4', 'd28bde3177efd4f6a0e45e0ec3559362', 1, 1);
+INSERT INTO `sys_file` VALUES (16, '农产品溯源数据标准.xlsx', 'xlsx', 89012, 'http://localhost:8888/sysFile/trace_data_standard.xlsx', '54e81fb10b52f93ca441c62465b18b2e', 1, 1);
+
+-- ----------------------------
+-- Table structure for warehouse
+-- ----------------------------
+-- 库存表
+-- 用途: 存储库存信息，包括产品的库存状态、发货和收货信息
+-- 字段说明:
+--   id: 库存ID，字符串类型，不能为空，作为主键
+--   traceCode: 溯源码，与产品表关联
+--   amount: 发货数量
+--   sendDate: 发货日期
+--   origin: 产地
+--   name: 产品名称
+--   recvDate: 收货日期
+--   productId: 产品ID，与产品表关联
+DROP TABLE IF EXISTS `warehouse`;
+CREATE TABLE `warehouse`  (
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `traceCode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `amount` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `sendDate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `origin` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `recvDate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `productId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of warehouse
+-- ----------------------------
+-- 区块链农产品溯源系统库存数据
+INSERT INTO `warehouse` VALUES ('W001', 'BLOCKCHAIN_20230901_001', '1000', '2023-09-02', '黑龙江五常', '有机大米', '2023-09-03', 'P001');
+INSERT INTO `warehouse` VALUES ('W002', 'BLOCKCHAIN_20230902_002', '500', '2023-09-03', '山东寿光', '绿色蔬菜', '2023-09-04', 'P002');
+INSERT INTO `warehouse` VALUES ('W003', 'BLOCKCHAIN_20230903_003', '300', '2023-09-04', '陕西洛川', '生态水果', '2023-09-05', 'P003');
+INSERT INTO `warehouse` VALUES ('W004', 'BLOCKCHAIN_20230904_004', '200', '2023-09-05', '河南漯河', '有机猪肉', '2023-09-06', 'P004');
+INSERT INTO `warehouse` VALUES ('W005', 'BLOCKCHAIN_20230905_005', '1000', '2023-09-06', '河北唐山', '有机鸡蛋', '2023-09-07', 'P005');
 
 -- ----------------------------
 -- Table structure for sys_log
 -- ----------------------------
+-- 系统日志表
+-- 用途: 存储系统操作日志，记录用户的操作行为
+-- 字段说明:
+--   id: 自增主键，唯一标识
+--   username: 操作人
+--   record: 操作记录，描述具体操作内容
+--   type: 操作类型，如查询、新增、修改、删除等
+--   create_time: 创建时间，默认当前时间戳
 DROP TABLE IF EXISTS `sys_log`;
 CREATE TABLE `sys_log`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -482,77 +537,78 @@ CREATE TABLE `sys_log`  (
 -- ----------------------------
 -- Records of sys_log
 -- ----------------------------
-INSERT INTO `sys_log` VALUES (8, 'admin', '查询字典分页', '查询', '2023-09-05 20:47:24');
-INSERT INTO `sys_log` VALUES (9, 'admin', '查询字典分页', '查询', '2023-09-05 20:47:33');
-INSERT INTO `sys_log` VALUES (10, 'admin', '查询字典分页', '查询', '2023-09-05 20:51:32');
-INSERT INTO `sys_log` VALUES (11, 'admin', '查询字典分页', '查询', '2023-09-05 20:51:37');
-INSERT INTO `sys_log` VALUES (12, 'admin', '新增/修改字典分页', '新增/修改', '2023-09-05 20:51:47');
-INSERT INTO `sys_log` VALUES (13, 'admin', '查询字典分页', '查询', '2023-09-05 20:51:47');
-INSERT INTO `sys_log` VALUES (14, 'admin', '批量删除字典', '删除', '2023-09-05 20:52:01');
-INSERT INTO `sys_log` VALUES (15, 'admin', '查询字典分页', '查询', '2023-09-05 20:52:01');
-INSERT INTO `sys_log` VALUES (16, 'admin', '查询字典分页', '查询', '2023-09-05 20:52:01');
-INSERT INTO `sys_log` VALUES (17, 'admin', '新增/修改字典分页', '新增/修改', '2023-09-05 20:52:22');
-INSERT INTO `sys_log` VALUES (18, 'admin', '查询字典分页', '查询', '2023-09-05 20:52:22');
-INSERT INTO `sys_log` VALUES (19, 'admin', '查询字典分页', '查询', '2023-09-05 20:52:24');
-INSERT INTO `sys_log` VALUES (20, 'admin', '根据id删除字典', '删除', '2023-09-05 20:52:29');
-INSERT INTO `sys_log` VALUES (21, 'admin', '查询字典分页', '查询', '2023-09-05 20:52:29');
-INSERT INTO `sys_log` VALUES (22, 'admin', '查询字典分页', '查询', '2023-09-05 20:52:29');
-INSERT INTO `sys_log` VALUES (23, 'admin', '查询字典分页', '查询', '2023-09-07 07:35:01');
-INSERT INTO `sys_log` VALUES (24, 'admin', '查询全部字典', '查询', '2023-09-07 07:36:36');
-INSERT INTO `sys_log` VALUES (25, 'admin', '查询全部字典', '查询', '2023-09-07 07:37:34');
-INSERT INTO `sys_log` VALUES (26, 'admin', '查询全部字典', '查询', '2023-09-07 07:38:33');
-INSERT INTO `sys_log` VALUES (27, 'admin', '查询字典分页', '查询', '2023-09-07 07:38:35');
-INSERT INTO `sys_log` VALUES (28, 'admin', '查询全部字典', '查询', '2023-09-07 07:39:27');
-INSERT INTO `sys_log` VALUES (29, 'admin', '查询全部字典', '查询', '2023-09-07 07:39:32');
-INSERT INTO `sys_log` VALUES (30, 'admin', '查询字典分页', '查询', '2023-09-07 07:43:55');
-INSERT INTO `sys_log` VALUES (31, 'admin', '查询全部字典', '查询', '2023-09-07 07:43:57');
-INSERT INTO `sys_log` VALUES (32, 'admin', '查询全部字典', '查询', '2023-09-07 07:44:07');
-INSERT INTO `sys_log` VALUES (33, 'admin', '查询全部字典', '查询', '2023-09-07 07:44:27');
-INSERT INTO `sys_log` VALUES (34, 'admin', '查询字典分页', '查询', '2023-09-07 07:44:28');
-INSERT INTO `sys_log` VALUES (35, 'admin', '查询全部字典', '查询', '2023-09-07 12:36:09');
-INSERT INTO `sys_log` VALUES (36, 'admin', '查询字典分页', '查询', '2023-09-07 12:36:11');
-INSERT INTO `sys_log` VALUES (37, 'admin', '查询全部字典', '查询', '2023-09-07 12:36:14');
-INSERT INTO `sys_log` VALUES (38, 'admin', '查询字典分页', '查询', '2023-09-07 18:31:22');
-INSERT INTO `sys_log` VALUES (39, 'admin', '查询全部字典', '查询', '2023-09-07 18:31:23');
-INSERT INTO `sys_log` VALUES (40, 'admin', '查询全部字典', '查询', '2023-09-07 18:31:25');
-INSERT INTO `sys_log` VALUES (41, 'admin', '查询字典分页', '查询', '2023-09-09 08:18:56');
-INSERT INTO `sys_log` VALUES (42, 'admin', '查询字典分页', '查询', '2023-09-09 08:19:00');
-INSERT INTO `sys_log` VALUES (43, 'admin', '查询全部字典', '查询', '2023-09-09 08:20:44');
-INSERT INTO `sys_log` VALUES (44, 'admin', '查询全部字典', '查询', '2023-09-09 08:20:55');
-INSERT INTO `sys_log` VALUES (45, 'admin', '查询字典分页', '查询', '2023-09-09 08:22:25');
-INSERT INTO `sys_log` VALUES (46, 'admin', '查询全部字典', '查询', '2023-09-09 08:22:26');
-INSERT INTO `sys_log` VALUES (47, 'admin', '查询全部字典', '查询', '2023-09-09 08:23:15');
-INSERT INTO `sys_log` VALUES (48, 'admin', '查询字典分页', '查询', '2023-09-09 08:31:35');
-INSERT INTO `sys_log` VALUES (49, 'admin', '查询全部字典', '查询', '2023-09-09 08:31:37');
-INSERT INTO `sys_log` VALUES (50, 'admin', '查询字典分页', '查询', '2023-09-09 08:31:38');
-INSERT INTO `sys_log` VALUES (51, 'admin', '查询全部字典', '查询', '2023-09-09 08:32:09');
-INSERT INTO `sys_log` VALUES (52, 'admin', '查询全部字典', '查询', '2023-09-09 08:33:49');
-INSERT INTO `sys_log` VALUES (53, 'admin', '查询全部字典', '查询', '2023-09-09 08:34:16');
-INSERT INTO `sys_log` VALUES (54, 'admin', '查询全部字典', '查询', '2023-09-09 08:34:23');
-INSERT INTO `sys_log` VALUES (55, 'admin', '查询全部字典', '查询', '2023-09-09 08:35:14');
-INSERT INTO `sys_log` VALUES (56, 'admin', '查询字典分页', '查询', '2023-09-09 08:41:09');
-INSERT INTO `sys_log` VALUES (57, 'admin', '查询全部字典', '查询', '2023-09-09 08:41:09');
-INSERT INTO `sys_log` VALUES (58, 'admin', '查询全部字典', '查询', '2023-09-09 08:41:53');
-INSERT INTO `sys_log` VALUES (59, 'admin', '查询字典分页', '查询', '2023-09-09 08:44:21');
-INSERT INTO `sys_log` VALUES (60, 'admin', '查询全部字典', '查询', '2023-09-09 08:45:00');
-INSERT INTO `sys_log` VALUES (61, 'admin', '查询字典分页', '查询', '2023-09-09 08:45:01');
-INSERT INTO `sys_log` VALUES (62, 'admin', '查询全部字典', '查询', '2023-09-09 08:45:06');
-INSERT INTO `sys_log` VALUES (63, 'admin', '查询字典分页', '查询', '2023-09-09 08:45:07');
-INSERT INTO `sys_log` VALUES (64, 'admin', '查询全部字典', '查询', '2023-09-09 08:49:03');
-INSERT INTO `sys_log` VALUES (65, 'admin', '查询字典分页', '查询', '2023-09-09 08:49:04');
-INSERT INTO `sys_log` VALUES (66, 'admin', '查询全部字典', '查询', '2023-09-09 15:17:05');
-INSERT INTO `sys_log` VALUES (67, 'admin', '上传文件', '新增', '2023-09-09 15:22:55');
-INSERT INTO `sys_log` VALUES (68, 'admin', '上传文件', '新增', '2023-09-09 15:31:05');
-INSERT INTO `sys_log` VALUES (69, 'admin', '上传文件', '新增', '2023-09-09 15:32:23');
-INSERT INTO `sys_log` VALUES (70, 'admin', '上传文件', '新增', '2023-09-09 15:33:02');
-INSERT INTO `sys_log` VALUES (71, 'admin', '上传文件', '新增', '2023-09-09 15:33:24');
-INSERT INTO `sys_log` VALUES (72, 'admin', '上传文件', '新增', '2023-09-09 15:33:59');
-INSERT INTO `sys_log` VALUES (73, 'admin', '上传文件', '新增', '2023-09-09 15:34:13');
-INSERT INTO `sys_log` VALUES (74, 'admin', '上传文件', '新增', '2023-09-09 15:36:29');
-INSERT INTO `sys_log` VALUES (75, 'admin', '上传文件', '新增', '2023-09-09 15:36:46');
-INSERT INTO `sys_log` VALUES (76, 'admin', '查询全部字典', '查询', '2023-09-09 16:37:43');
-INSERT INTO `sys_log` VALUES (77, 'admin', '查询字典分页', '查询', '2023-09-09 19:03:02');
-INSERT INTO `sys_log` VALUES (78, 'admin', '查询全部字典', '查询', '2023-09-09 19:03:07');
+-- 区块链农产品溯源系统操作日志
+INSERT INTO `sys_log` VALUES (8, 'admin', '新增有机大米产品信息', '新增', '2023-09-05 20:47:24');
+INSERT INTO `sys_log` VALUES (9, 'admin', '生成有机大米溯源码', '新增', '2023-09-05 20:47:33');
+INSERT INTO `sys_log` VALUES (10, 'admin', '查询产品列表', '查询', '2023-09-05 20:51:32');
+INSERT INTO `sys_log` VALUES (11, 'admin', '上传有机大米种植环境数据', '上传', '2023-09-05 20:51:37');
+INSERT INTO `sys_log` VALUES (12, 'admin', '修改绿色蔬菜产品信息', '修改', '2023-09-05 20:51:47');
+INSERT INTO `sys_log` VALUES (13, 'admin', '查询产品溯源信息', '查询', '2023-09-05 20:51:47');
+INSERT INTO `sys_log` VALUES (14, 'admin', '删除过期产品信息', '删除', '2023-09-05 20:52:01');
+INSERT INTO `sys_log` VALUES (15, 'admin', '查询系统公告', '查询', '2023-09-05 20:52:01');
+INSERT INTO `sys_log` VALUES (16, 'admin', '上传有机蔬菜检测报告', '上传', '2023-09-05 20:52:01');
+INSERT INTO `sys_log` VALUES (17, 'admin', '新增生态水果产品信息', '新增', '2023-09-05 20:52:22');
+INSERT INTO `sys_log` VALUES (18, 'admin', '生成生态水果溯源码', '新增', '2023-09-05 20:52:22');
+INSERT INTO `sys_log` VALUES (19, 'admin', '查询产品销售记录', '查询', '2023-09-05 20:52:24');
+INSERT INTO `sys_log` VALUES (20, 'admin', '上传生态水果种植基地照片', '上传', '2023-09-05 20:52:29');
+INSERT INTO `sys_log` VALUES (21, 'admin', '查询系统文件', '查询', '2023-09-05 20:52:29');
+INSERT INTO `sys_log` VALUES (22, 'admin', '修改系统公告', '修改', '2023-09-05 20:52:29');
+INSERT INTO `sys_log` VALUES (23, 'admin', '查询有机猪肉产品信息', '查询', '2023-09-07 07:35:01');
+INSERT INTO `sys_log` VALUES (24, 'admin', '生成有机猪肉溯源码', '新增', '2023-09-07 07:36:36');
+INSERT INTO `sys_log` VALUES (25, 'admin', '上传有机猪肉养殖数据', '上传', '2023-09-07 07:37:34');
+INSERT INTO `sys_log` VALUES (26, 'admin', '查询有机鸡蛋产品信息', '查询', '2023-09-07 07:38:33');
+INSERT INTO `sys_log` VALUES (27, 'admin', '生成有机鸡蛋溯源码', '新增', '2023-09-07 07:38:35');
+INSERT INTO `sys_log` VALUES (28, 'admin', '上传有机鸡蛋检测报告', '上传', '2023-09-07 07:39:27');
+INSERT INTO `sys_log` VALUES (29, 'admin', '查询系统操作日志', '查询', '2023-09-07 07:39:32');
+INSERT INTO `sys_log` VALUES (30, 'admin', '导出产品溯源数据', '导出', '2023-09-07 07:43:55');
+INSERT INTO `sys_log` VALUES (31, 'admin', '导入产品销售数据', '导入', '2023-09-07 07:43:57');
+INSERT INTO `sys_log` VALUES (32, 'admin', '查询产品库存', '查询', '2023-09-07 07:44:07');
+INSERT INTO `sys_log` VALUES (33, 'admin', '修改系统设置', '修改', '2023-09-07 07:44:27');
+INSERT INTO `sys_log` VALUES (34, 'admin', '查询系统字典', '查询', '2023-09-07 07:44:28');
+INSERT INTO `sys_log` VALUES (35, 'admin', '新增系统公告', '新增', '2023-09-07 12:36:09');
+INSERT INTO `sys_log` VALUES (36, 'admin', '上传系统使用手册', '上传', '2023-09-07 12:36:11');
+INSERT INTO `sys_log` VALUES (37, 'admin', '查询系统文件列表', '查询', '2023-09-07 12:36:14');
+INSERT INTO `sys_log` VALUES (38, 'admin', '修改产品价格信息', '修改', '2023-09-07 18:31:22');
+INSERT INTO `sys_log` VALUES (39, 'admin', '查询产品溯源记录', '查询', '2023-09-07 18:31:23');
+INSERT INTO `sys_log` VALUES (40, 'admin', '上传系统培训视频', '上传', '2023-09-07 18:31:25');
+INSERT INTO `sys_log` VALUES (41, 'admin', '查询系统公告列表', '查询', '2023-09-09 08:18:56');
+INSERT INTO `sys_log` VALUES (42, 'admin', '修改系统公告', '修改', '2023-09-09 08:19:00');
+INSERT INTO `sys_log` VALUES (43, 'admin', '查询产品销售统计', '查询', '2023-09-09 08:20:44');
+INSERT INTO `sys_log` VALUES (44, 'admin', '导出销售报表', '导出', '2023-09-09 08:20:55');
+INSERT INTO `sys_log` VALUES (45, 'admin', '查询系统用户', '查询', '2023-09-09 08:22:25');
+INSERT INTO `sys_log` VALUES (46, 'admin', '修改用户权限', '修改', '2023-09-09 08:22:26');
+INSERT INTO `sys_log` VALUES (47, 'admin', '查询系统日志', '查询', '2023-09-09 08:23:15');
+INSERT INTO `sys_log` VALUES (48, 'admin', '上传系统架构图', '上传', '2023-09-09 08:31:35');
+INSERT INTO `sys_log` VALUES (49, 'admin', '查询系统文件', '查询', '2023-09-09 08:31:37');
+INSERT INTO `sys_log` VALUES (50, 'admin', '修改系统配置', '修改', '2023-09-09 08:31:38');
+INSERT INTO `sys_log` VALUES (51, 'admin', '查询产品库存', '查询', '2023-09-09 08:32:09');
+INSERT INTO `sys_log` VALUES (52, 'admin', '新增产品库存', '新增', '2023-09-09 08:33:49');
+INSERT INTO `sys_log` VALUES (53, 'admin', '修改产品库存', '修改', '2023-09-09 08:34:16');
+INSERT INTO `sys_log` VALUES (54, 'admin', '删除过期库存', '删除', '2023-09-09 08:34:23');
+INSERT INTO `sys_log` VALUES (55, 'admin', '查询系统字典', '查询', '2023-09-09 08:35:14');
+INSERT INTO `sys_log` VALUES (56, 'admin', '修改系统字典', '修改', '2023-09-09 08:41:09');
+INSERT INTO `sys_log` VALUES (57, 'admin', '查询系统文件', '查询', '2023-09-09 08:41:09');
+INSERT INTO `sys_log` VALUES (58, 'admin', '上传系统数据标准', '上传', '2023-09-09 08:41:53');
+INSERT INTO `sys_log` VALUES (59, 'admin', '查询产品溯源码', '查询', '2023-09-09 08:44:21');
+INSERT INTO `sys_log` VALUES (60, 'admin', '生成产品溯源码', '新增', '2023-09-09 08:45:00');
+INSERT INTO `sys_log` VALUES (61, 'admin', '上传产品检测报告', '上传', '2023-09-09 08:45:01');
+INSERT INTO `sys_log` VALUES (62, 'admin', '查询产品检测报告', '查询', '2023-09-09 08:45:06');
+INSERT INTO `sys_log` VALUES (63, 'admin', '修改产品检测报告', '修改', '2023-09-09 08:45:07');
+INSERT INTO `sys_log` VALUES (64, 'admin', '查询系统公告', '查询', '2023-09-09 08:49:03');
+INSERT INTO `sys_log` VALUES (65, 'admin', '新增系统公告', '新增', '2023-09-09 08:49:04');
+INSERT INTO `sys_log` VALUES (66, 'admin', '查询系统文件', '查询', '2023-09-09 15:17:05');
+INSERT INTO `sys_log` VALUES (67, 'admin', '上传有机大米种植流程图', '上传', '2023-09-09 15:22:55');
+INSERT INTO `sys_log` VALUES (68, 'admin', '上传区块链技术应用PPT', '上传', '2023-09-09 15:31:05');
+INSERT INTO `sys_log` VALUES (69, 'admin', '上传农产品溯源码生成规范', '上传', '2023-09-09 15:32:23');
+INSERT INTO `sys_log` VALUES (70, 'admin', '上传系统操作培训视频', '上传', '2023-09-09 15:33:02');
+INSERT INTO `sys_log` VALUES (71, 'admin', '上传农产品溯源数据标准', '上传', '2023-09-09 15:33:24');
+INSERT INTO `sys_log` VALUES (72, 'admin', '上传生态水果种植基地照片', '上传', '2023-09-09 15:33:59');
+INSERT INTO `sys_log` VALUES (73, 'admin', '上传有机蔬菜检测报告', '上传', '2023-09-09 15:34:13');
+INSERT INTO `sys_log` VALUES (74, 'admin', '上传系统架构图', '上传', '2023-09-09 15:36:29');
+INSERT INTO `sys_log` VALUES (75, 'admin', '上传区块链农产品溯源系统logo', '上传', '2023-09-09 15:36:46');
+INSERT INTO `sys_log` VALUES (76, 'admin', '查询系统日志', '查询', '2023-09-09 16:37:43');
+INSERT INTO `sys_log` VALUES (77, 'admin', '导出系统操作日志', '导出', '2023-09-09 19:03:02');
+INSERT INTO `sys_log` VALUES (78, 'admin', '查询系统文件', '查询', '2023-09-09 19:03:07');
 INSERT INTO `sys_log` VALUES (79, 'admin', '查询全部字典', '查询', '2023-09-09 19:03:54');
 INSERT INTO `sys_log` VALUES (80, 'admin', '查询全部字典', '查询', '2023-09-09 19:04:01');
 INSERT INTO `sys_log` VALUES (81, 'admin', '查询全部字典', '查询', '2023-09-09 19:04:04');

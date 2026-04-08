@@ -1,135 +1,173 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Maven 项目配置文件 -->
+<!-- 文件名: pom.xml -->
+<!-- 描述: 毕业框架项目的 Maven 配置，包含项目信息、依赖管理和构建配置 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- POM 模型版本 -->
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- 父项目配置 -->
+    <!-- 使用 Spring Boot 官方提供的父项目，继承其依赖管理和插件配置 -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.9</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>2.5.9</version> <!-- Spring Boot 版本 -->
+        <relativePath/> <!-- 从 Maven 仓库查找父项目 -->
     </parent>
-    <groupId>com.example</groupId>
-    <artifactId>graduation-framework</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>graduation-framework</name>
-    <description>Demo project for Spring Boot</description>
+    
+    <!-- 项目基本信息 -->
+    <groupId>com.example</groupId> <!-- 项目组织 ID -->
+    <artifactId>graduation-framework</artifactId> <!-- 项目 ID -->
+    <version>0.0.1-SNAPSHOT</version> <!-- 项目版本，SNAPSHOT 表示开发版本 -->
+    <name>graduation-framework</name> <!-- 项目名称 -->
+    <description>Demo project for Spring Boot</description> <!-- 项目描述 -->
+    
+    <!-- 项目属性 -->
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>1.8</java.version> <!-- Java 版本 -->
     </properties>
+    
+    <!-- 依赖管理 -->
     <dependencies>
+        <!-- Spring Boot 核心依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter</artifactId> <!-- Spring Boot 核心启动器 -->
         </dependency>
 
+        <!-- 测试依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <artifactId>spring-boot-starter-test</artifactId> <!-- 测试启动器 -->
+            <scope>test</scope> <!-- 仅在测试时使用 -->
         </dependency>
 
-        <!--        swagger-->
+        <!-- Swagger 依赖 -->
+        <!-- 用于生成 API 文档 -->
         <dependency>
             <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>2.9.2</version>
+            <artifactId>springfox-swagger2</artifactId> <!-- Swagger 核心库 -->
+            <version>2.9.2</version> <!-- Swagger 版本 -->
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.9.2</version>
+            <artifactId>springfox-swagger-ui</artifactId> <!-- Swagger UI 界面 -->
+            <version>2.9.2</version> <!-- Swagger UI 版本 -->
         </dependency>
 
-
+        <!-- Web 依赖 -->
+        <!-- 用于构建 Web 应用，包含 Spring MVC 和 Tomcat 嵌入式容器 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId> <!-- Web 启动器 -->
         </dependency>
 
-
+        <!-- MySQL 数据库驱动 -->
+        <!-- 用于连接 MySQL 数据库 -->
         <dependency>
             <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
+            <artifactId>mysql-connector-java</artifactId> <!-- MySQL 驱动 -->
+            <scope>runtime</scope> <!-- 仅在运行时使用 -->
         </dependency>
+        
+        <!-- Lombok 依赖 -->
+        <!-- 用于简化代码，自动生成 getter、setter、构造函数等 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
+            <artifactId>lombok</artifactId> <!-- Lombok 库 -->
+            <optional>true</optional> <!-- 可选依赖，避免传递给其他项目 -->
         </dependency>
-        <!-- mybatis-plus -->
+        
+        <!-- MyBatis-Plus 依赖 -->
+        <!-- MyBatis 的增强工具，提供更多功能 -->
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.1</version>
+            <artifactId>mybatis-plus-boot-starter</artifactId> <!-- MyBatis-Plus 启动器 -->
+            <version>3.5.1</version> <!-- MyBatis-Plus 版本 -->
         </dependency>
+        
+        <!-- MyBatis 依赖 -->
+        <!-- MyBatis 核心库 -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>2.2.1</version>
+            <artifactId>mybatis-spring-boot-starter</artifactId> <!-- MyBatis 启动器 -->
+            <version>2.2.1</version> <!-- MyBatis 版本 -->
         </dependency>
 
         <!-- 代码生成器 -->
+        <!-- 用于自动生成代码 -->
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-generator</artifactId>
-            <version>3.5.1</version>
+            <artifactId>mybatis-plus-generator</artifactId> <!-- MyBatis-Plus 代码生成器 -->
+            <version>3.5.1</version> <!-- 代码生成器版本 -->
         </dependency>
+        
+        <!-- Velocity 模板引擎 -->
+        <!-- 代码生成器使用的模板引擎 -->
         <dependency>
             <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity-engine-core</artifactId>
-            <version>2.3</version>
+            <artifactId>velocity-engine-core</artifactId> <!-- Velocity 核心库 -->
+            <version>2.3</version> <!-- Velocity 版本 -->
         </dependency>
 
-        <!--redis-->
+        <!-- Redis 依赖 -->
+        <!-- 用于操作 Redis 缓存 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <artifactId>spring-boot-starter-data-redis</artifactId> <!-- Redis 启动器 -->
         </dependency>
-        <!--  JSON的依赖      -->
+        
+        <!-- JSON 依赖 -->
+        <!-- 用于 JSON 序列化和反序列化 -->
         <dependency>
             <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.69</version>
+            <artifactId>fastjson</artifactId> <!-- Fastjson 库 -->
+            <version>1.2.69</version> <!-- Fastjson 版本 -->
         </dependency>
 
+        <!--  Commons Codec 依赖 -->
+        <!-- 提供编码和解码功能 -->
         <dependency>
             <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
+            <artifactId>commons-codec</artifactId> <!-- Commons Codec 库 -->
         </dependency>
 
-
-        <!-- JWT -->
+        <!-- JWT 依赖 -->
+        <!-- 用于生成和验证 JWT 令牌 -->
         <dependency>
             <groupId>com.auth0</groupId>
-            <artifactId>java-jwt</artifactId>
-            <version>3.10.3</version>
+            <artifactId>java-jwt</artifactId> <!-- JWT 库 -->
+            <version>3.10.3</version> <!-- JWT 版本 -->
         </dependency>
 
+        <!-- Spring Boot DevTools 依赖 -->
+        <!-- 用于开发时热部署，提高开发效率 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
+            <artifactId>spring-boot-devtools</artifactId> <!-- DevTools 库 -->
+            <optional>true</optional> <!-- 可选依赖 -->
         </dependency>
 
-        <!-- Spring Boot AOP 依赖（推荐） -->
+        <!-- Spring Boot AOP 依赖 -->
+        <!-- 用于实现面向切面编程 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <artifactId>spring-boot-starter-aop</artifactId> <!-- AOP 启动器 -->
         </dependency>
 
     </dependencies>
 
+    <!-- 构建配置 -->
     <build>
         <plugins>
+            <!-- Spring Boot Maven 插件 -->
+            <!-- 用于打包 Spring Boot 应用 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <artifactId>spring-boot-maven-plugin</artifactId> <!-- Spring Boot 打包插件 -->
             </plugin>
         </plugins>
     </build>
-
-
 
 </project>
