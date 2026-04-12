@@ -86,8 +86,18 @@ export const setRoutes  = () => {
              },
              {
                path: 'home',
-               name: 'home',
+               name: '主页',
                component: () => import(/* webpackChunkName: "about" */ '../views/Home.vue'),
+             },
+             {
+               path: 'imageUpload',
+               name: '图片处理',
+               component: () => import(/* webpackChunkName: "about" */ '../views/ImageUpload.vue'),
+             },
+             {
+               path: 'productVisualization',
+               name: '农产品可视化',
+               component: () => import(/* webpackChunkName: "about" */ '../views/ProductVisualization.vue'),
              }
            ]
          };

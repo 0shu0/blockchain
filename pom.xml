@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId> <!-- Lombok 库 -->
-            <optional>true</optional> <!-- 可选依赖，避免传递给其他项目 -->
+            <optional>false</optional> <!-- 非可选依赖，确保编译时能够识别Lombok生成的方法 -->
         </dependency>
         
         <!-- MyBatis-Plus 依赖 -->

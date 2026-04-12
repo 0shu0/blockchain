@@ -1,15 +1,15 @@
 <template>
-  <el-container style="min-height: 100vh">
-    <el-aside :width="sideWidth + 'px'">
+  <el-container class="manage-container">
+    <el-aside :width="sideWidth + 'px'" class="aside-container">
      <Aside :isCollapse="isCollapse" :logoTextShow="logoTextShow"></Aside>
     </el-aside>
 
-    <el-container>
-      <el-header style="border-bottom: 1px solid #ccc">
+    <el-container class="main-container">
+      <el-header class="header-container">
        <Header @collapse="collapse" :collapseBtnClass="collapseBtnClass" :user="user"></Header>
       </el-header>
 
-      <el-main>
+      <el-main class="main-content">
         <router-view @refreshUser="getUser"></router-view>
       </el-main>
     </el-container>
@@ -29,7 +29,7 @@ export default {
       isCollapse:false,
       logoTextShow:true,
       collapseBtnClass:'el-icon-s-fold',
-      sideWidth:200,
+      sideWidth:220,
       user:{}
     }
   },
@@ -41,11 +41,11 @@ export default {
       this.isCollapse = !this.isCollapse;
       if(this.isCollapse){
         //收缩
-        this.sideWidth = 48;
+        this.sideWidth = 60;
         this.logoTextShow = false;
         this.collapseBtnClass = 'el-icon-s-unfold';
       }else{
-        this.sideWidth = 200;
+        this.sideWidth = 220;
         this.logoTextShow = true;
         this.collapseBtnClass = 'el-icon-s-fold';
       }
@@ -69,9 +69,64 @@ export default {
 </script>
 
 <style scoped>
-/*去掉aside侧边栏的底部滚动条*/
-.el-aside::-webkit-scrollbar {
-  display: none;
+.manage-container {
+  min-height: 100vh;
+  background-color: var(--bg-color-secondary);
+}
 
+/* 侧边栏样式 */
+.aside-container {
+  transition: width var(--transition-normal);
+  background-color: #2c3e50;
+  box-shadow: var(--box-shadow-light);
+  overflow: hidden;
+}
+
+/* 主容器样式 */
+.main-container {
+  transition: all var(--transition-normal);
+  background-color: var(--bg-color-secondary);
+}
+
+/* 头部样式 */
+.header-container {
+  height: 60px;
+  padding: 0 var(--spacing-lg);
+  background-color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 主内容区样式 */
+.main-content {
+  padding: 0;
+  min-height: calc(100vh - 60px);
+  transition: all var(--transition-normal);
+}
+
+/* 页面过渡动画 */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+}
+
+.page-enter,
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 768px) {
+  .main-content {
+    padding: var(--spacing-md);
+  }
+  
+  .header-container {
+    padding: 0 var(--spacing-md);
+  }
 }
 </style>

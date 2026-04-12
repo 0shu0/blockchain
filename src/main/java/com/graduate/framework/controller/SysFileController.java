@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.UUID;
@@ -109,7 +110,9 @@ public class SysFileController {
             String uuid = UUID.randomUUID().toString().replaceAll("-", "");
             String fileUUID = uuid + "." + type;
             File uploadFile = new File(fileUploadPath + fileUUID);
-            url = "http://localhost:8888/sysFile/" + fileUUID;
+            // 使用局域网IP地址生成URL，确保其他机器能够访问
+            String hostname = InetAddress.getLocalHost().getHostAddress();
+            url = "http://" + hostname + ":8888/sysFile/" + fileUUID;
             file.transferTo(uploadFile);
         }
 
@@ -121,6 +124,24 @@ public class SysFileController {
         sysFile.setUrl(url);
         sysFile.setMd5(md5);
         sysFileService.save(sysFile);
+        
+        // 将URL追加写入文件
+        try {
+            File urlListFile = new File(fileUploadPath + File.separator + "url_list.txt");
+            // 使用BufferedWriter提升效率
+            try (java.io.BufferedWriter writer = new java.io.BufferedWriter(
+                    new java.io.OutputStreamWriter(
+                            new java.io.FileOutputStream(urlListFile, true), // 追加模式
+                            java.nio.charset.StandardCharsets.UTF_8
+                    )
+            )) {
+                writer.write(url);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
         return url;
     }
 
@@ -188,5 +209,62 @@ public class SysFileController {
         }
         Page<SysFile> sysFilePage = sysFileService.page(page, queryWrapper);
         return Result.success(sysFilePage);
+    }
+    
+    /**
+     * 获取URL列表
+     * @param response HttpServletResponse
+     * @throws IOException IOException
+     */
+    @GetMapping("/url-list")
+    @NoAuth
+    public void getUrlList(HttpServletResponse response) throws IOException {
+        // 设置响应头
+        response.setContentType("text/plain; charset=UTF-8");
+        response.setHeader("Content-Disposition", "inline; filename=url_list.txt");
+
+        // 读取URL列表文件
+        File urlListFile = new File(fileUploadPath + File.separator + "url_list.txt");
+        if (!urlListFile.exists()) {
+            response.getWriter().write("暂无URL记录");
+            return;
+        }
+
+        // 读取文件内容并写入响应
+        try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(urlListFile), java.nio.charset.StandardCharsets.UTF_8));
+             java.io.BufferedWriter writer = new java.io.BufferedWriter(new java.io.OutputStreamWriter(response.getOutputStream(), java.nio.charset.StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                writer.write(line);
+                writer.newLine();
+            }
+        }
+    }
+    
+    /**
+     * 清空URL列表
+     * @return Result
+     */
+    @PostMapping("/clear-url-list")
+    @NoAuth
+    public Result clearUrlList() {
+        try {
+            File urlListFile = new File(fileUploadPath + File.separator + "url_list.txt");
+            if (urlListFile.exists()) {
+                // 清空文件内容
+                try (java.io.BufferedWriter writer = new java.io.BufferedWriter(
+                        new java.io.OutputStreamWriter(
+                                new java.io.FileOutputStream(urlListFile, false), // 覆盖模式
+                                java.nio.charset.StandardCharsets.UTF_8
+                        )
+                )) {
+                    writer.write("");
+                }
+            }
+            return Result.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("500", "清空URL列表失败");
+        }
     }
 }

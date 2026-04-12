@@ -91,44 +91,7 @@ INSERT INTO `product` VALUES ('P003', '生态水果', '陕西洛川', '洛川苹
 INSERT INTO `product` VALUES ('P004', '有机猪肉', '河南漯河', '漯河生态养殖基地', 'BLOCKCHAIN_20230904_004');
 INSERT INTO `product` VALUES ('P005', '有机鸡蛋', '河北唐山', '唐山有机养殖场', 'BLOCKCHAIN_20230905_005');
 
--- ----------------------------
--- Table structure for shop
--- ----------------------------
--- 商品表
--- 用途: 存储商品的详细信息，包括物流和交易信息
--- 字段说明:
---   id: 商品ID，字符串类型，不能为空，作为主键
---   listDate: 上架日期
---   traceCode: 溯源码，与产品表关联
---   amount: 数量
---   sendDate: 发货日期
---   price: 价格
---   origin: 产地
---   name: 商品名称
---   recvDate: 收货日期
-DROP TABLE IF EXISTS `shop`;
-CREATE TABLE `shop`  (
-  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `listDate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `traceCode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `amount` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `sendDate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `price` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `origin` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `recvDate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
--- ----------------------------
--- Records of shop
--- ----------------------------
--- 区块链农产品溯源系统商品数据
-INSERT INTO `shop` VALUES ('S001', '2023-09-01', 'BLOCKCHAIN_20230901_001', '1000', '2023-09-02', '128', '黑龙江五常', '有机大米', '2023-09-03');
-INSERT INTO `shop` VALUES ('S002', '2023-09-02', 'BLOCKCHAIN_20230902_002', '500', '2023-09-03', '25', '山东寿光', '绿色蔬菜', '2023-09-04');
-INSERT INTO `shop` VALUES ('S003', '2023-09-03', 'BLOCKCHAIN_20230903_003', '300', '2023-09-04', '88', '陕西洛川', '生态水果', '2023-09-05');
-INSERT INTO `shop` VALUES ('S004', '2023-09-04', 'BLOCKCHAIN_20230904_004', '200', '2023-09-05', '158', '河南漯河', '有机猪肉', '2023-09-06');
-INSERT INTO `shop` VALUES ('S005', '2023-09-05', 'BLOCKCHAIN_20230905_005', '1000', '2023-09-06', '12', '河北唐山', '有机鸡蛋', '2023-09-07');
 
 -- ----------------------------
 -- Table structure for sys_dict
@@ -475,43 +438,6 @@ INSERT INTO `sys_file` VALUES (13, '区块链农产品溯源系统logo.png', 'pn
 INSERT INTO `sys_file` VALUES (14, '生态水果种植基地照片.jpg', 'jpg', 190, 'http://localhost:8888/sysFile/fruit_farm.jpg', 'd0c89de5c0fec38a2453a659500c7fc6', 1, 1);
 INSERT INTO `sys_file` VALUES (15, '系统操作培训视频.mp4', 'mp4', 123456, 'http://localhost:8888/sysFile/system_training.mp4', 'd28bde3177efd4f6a0e45e0ec3559362', 1, 1);
 INSERT INTO `sys_file` VALUES (16, '农产品溯源数据标准.xlsx', 'xlsx', 89012, 'http://localhost:8888/sysFile/trace_data_standard.xlsx', '54e81fb10b52f93ca441c62465b18b2e', 1, 1);
-
--- ----------------------------
--- Table structure for warehouse
--- ----------------------------
--- 库存表
--- 用途: 存储库存信息，包括产品的库存状态、发货和收货信息
--- 字段说明:
---   id: 库存ID，字符串类型，不能为空，作为主键
---   traceCode: 溯源码，与产品表关联
---   amount: 发货数量
---   sendDate: 发货日期
---   origin: 产地
---   name: 产品名称
---   recvDate: 收货日期
---   productId: 产品ID，与产品表关联
-DROP TABLE IF EXISTS `warehouse`;
-CREATE TABLE `warehouse`  (
-  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `traceCode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `amount` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `sendDate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `origin` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `recvDate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `productId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of warehouse
--- ----------------------------
--- 区块链农产品溯源系统库存数据
-INSERT INTO `warehouse` VALUES ('W001', 'BLOCKCHAIN_20230901_001', '1000', '2023-09-02', '黑龙江五常', '有机大米', '2023-09-03', 'P001');
-INSERT INTO `warehouse` VALUES ('W002', 'BLOCKCHAIN_20230902_002', '500', '2023-09-03', '山东寿光', '绿色蔬菜', '2023-09-04', 'P002');
-INSERT INTO `warehouse` VALUES ('W003', 'BLOCKCHAIN_20230903_003', '300', '2023-09-04', '陕西洛川', '生态水果', '2023-09-05', 'P003');
-INSERT INTO `warehouse` VALUES ('W004', 'BLOCKCHAIN_20230904_004', '200', '2023-09-05', '河南漯河', '有机猪肉', '2023-09-06', 'P004');
-INSERT INTO `warehouse` VALUES ('W005', 'BLOCKCHAIN_20230905_005', '1000', '2023-09-06', '河北唐山', '有机鸡蛋', '2023-09-07', 'P005');
 
 -- ----------------------------
 -- Table structure for sys_log
@@ -897,8 +823,7 @@ INSERT INTO `sys_menu` VALUES (13, '公告管理', '/notice', 'el-icon-s-data', 
 INSERT INTO `sys_menu` VALUES (15, '主页', '/home', 'el-icon-house', '后台主页', NULL, 'Home', 1);
 INSERT INTO `sys_menu` VALUES (18, '农产品管理', '/Product', 'el-icon-menu', NULL, NULL, 'Product', 1);
 INSERT INTO `sys_menu` VALUES (19, '库存管理', '/Warehouse', 'el-icon-house', NULL, NULL, 'Warehouse', 2);
-INSERT INTO `sys_menu` VALUES (20, '商品管理', '/Shop', 'el-icon-platform-eleme', NULL, NULL, 'Shop', 3);
-INSERT INTO `sys_menu` VALUES (21, '溯源', '/Trace', 'el-icon-more', NULL, NULL, 'Trace', 4);
+INSERT INTO `sys_menu` VALUES (21, '溯源', '/Trace', 'el-icon-more', NULL, NULL, 'Trace', 3);
 
 -- ----------------------------
 -- Table structure for sys_role

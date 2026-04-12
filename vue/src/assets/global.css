@@ -1,4 +1,224 @@
-*{
-    margin: 0;
-    padding: 0;
+/* 全局样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 根元素变量定义 */
+:root {
+  /* 主色调 */
+  --primary-color: #007bff;
+  --primary-hover: #64ffda;
+  --primary-gradient: linear-gradient(135deg, #007bff 0%, #64ffda 100%);
+  
+  /* 辅助色 */
+  --success-color: #64ffda;
+  --warning-color: #ffcc70;
+  --danger-color: #f56c6c;
+  --info-color: #a3bffa;
+  
+  /* 中性色 */
+  --text-color-primary: #ffffff;
+  --text-color-regular: #a3bffa;
+  --text-color-secondary: #64ffda;
+  --text-color-placeholder: #4a5568;
+  
+  /* 背景色 */
+  --bg-color-primary: #0a192f;
+  --bg-color-secondary: #172a45;
+  --bg-color-tertiary: #233554;
+  
+  /* 边框色 */
+  --border-color: rgba(100, 255, 218, 0.3);
+  --border-color-light: rgba(100, 255, 218, 0.2);
+  --border-color-lighter: rgba(100, 255, 218, 0.1);
+  
+  /* 阴影 */
+  --box-shadow: 0 2px 12px 0 rgba(0, 123, 255, 0.2);
+  --box-shadow-light: 0 2px 8px rgba(0, 123, 255, 0.1);
+  --box-shadow-dark: 0 4px 16px rgba(0, 123, 255, 0.3);
+  
+  /* 圆角 */
+  --border-radius: 4px;
+  --border-radius-large: 8px;
+  --border-radius-round: 16px;
+  
+  /* 字体 */
+  --font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+  --font-size-base: 14px;
+  --font-size-small: 12px;
+  --font-size-large: 16px;
+  --font-size-xl: 18px;
+  --font-size-xxl: 24px;
+  
+  /* 间距 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* 过渡动画 */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* 全局字体设置 */
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--text-color-primary);
+  background-color: var(--bg-color-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+/* 链接样式 */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color-tertiary);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+  transition: background var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-color-placeholder);
+}
+
+/* 通用动画类 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform var(--transition-normal);
+}
+
+.slide-enter,
+.slide-leave-to {
+  transform: translateX(-100%);
+}
+
+/* 通用工具类 */
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mt-1 {
+  margin-top: var(--spacing-xs);
+}
+
+.mt-2 {
+  margin-top: var(--spacing-sm);
+}
+
+.mt-3 {
+  margin-top: var(--spacing-md);
+}
+
+.mt-4 {
+  margin-top: var(--spacing-lg);
+}
+
+.mb-1 {
+  margin-bottom: var(--spacing-xs);
+}
+
+.mb-2 {
+  margin-bottom: var(--spacing-sm);
+}
+
+.mb-3 {
+  margin-bottom: var(--spacing-md);
+}
+
+.mb-4 {
+  margin-bottom: var(--spacing-lg);
+}
+
+/* 卡片样式 */
+.card {
+  background-color: var(--bg-color-secondary);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--box-shadow-light);
+  padding: var(--spacing-lg);
+  transition: box-shadow var(--transition-normal);
+  border: 1px solid var(--border-color-light);
+}
+
+.card:hover {
+  box-shadow: var(--box-shadow);
+  border-color: var(--border-color);
+}
+
+/* 按钮基础样式 */
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+  outline: none;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background-color: var(--bg-color-tertiary);
+  color: var(--text-color-regular);
+}
+
+.btn-secondary:hover {
+  background-color: var(--border-color-light);
+  color: var(--text-color-primary);
 }
