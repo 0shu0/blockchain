@@ -61,44 +61,129 @@
     <!-- 图片预览 -->
     <div class="preview-section" v-if="uploadedImages.length > 0">
       <div class="section-card">
-        <div class="section-header">
-          <el-icon><el-icon-picture /></el-icon>
-          <h3>图片预览</h3>
+        <div class="table-header">
+          <h3>图片上传列表</h3>
+          <span class="table-count">{{ uploadedImages.length }} 条记录</span>
         </div>
         <div class="preview-content">
-          <div class="image-grid">
-            <div v-for="(imageUrl, index) in uploadedImages" :key="index" class="image-item">
-              <el-image
-                :src="imageUrl"
-                fit="cover"
-                class="preview-image"
-              >
-                <div slot="error" class="image-slot">
-                  <i class="el-icon-picture-outline"></i>
-                </div>
-              </el-image>
-              <div class="image-url">
+          <el-table 
+            :data="uploadedImages" 
+            border 
+            stripe 
+            style="width: 100%"
+          >
+            <el-table-column type="index" width="50" label="序号"></el-table-column>
+            <el-table-column label="图片" width="80">
+              <template slot-scope="scope">
+                <el-image
+                  :src="scope.row"
+                  fit="cover"
+                  class="table-image"
+                >
+                  <div slot="error" class="image-slot">
+                    <i class="el-icon-picture-outline"></i>
+                  </div>
+                </el-image>
+              </template>
+            </el-table-column>
+            <el-table-column prop="url" label="图片URL" min-width="400">
+              <template slot-scope="scope">
                 <el-input
-                  :value="imageUrl"
+                  :value="scope.row"
                   readonly
                   class="url-input"
                 >
                   <template slot="append">
-                    <el-button @click="copyUrl(imageUrl)" class="copy-button">
+                    <el-button @click="copyUrl(scope.row)" class="copy-button">
                       <i class="el-icon-document-copy"></i> 复制
                     </el-button>
                   </template>
                 </el-input>
-                <div class="image-actions">
-                  <el-button type="success" @click="openImageUrl(imageUrl)" class="open-button">
-                    <i class="el-icon-view"></i> 打开
-                  </el-button>
-                  <el-button type="danger" @click="removeImage(index)" class="remove-button">
-                    <i class="el-icon-delete"></i> 删除
-                  </el-button>
-                </div>
-              </div>
-            </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="180" fixed="right">
+              <template slot-scope="scope">
+                <el-button 
+                  type="primary" 
+                  size="small" 
+                  class="el-icon-view"
+                  @click="openImageUrl(scope.row)"
+                  title="打开"
+                ></el-button>
+                <el-button 
+                  type="danger" 
+                  size="small" 
+                  class="el-icon-delete"
+                  @click="removeImage(scope.$index)"
+                  title="删除"
+                ></el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div v-if="uploadedImages.length === 0" class="empty-state">
+            <el-empty description="暂无图片数据" />
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 图片回传列表 -->
+    <div class="return-section" v-if="returnImages.length > 0">
+      <div class="section-card">
+        <div class="table-header">
+          <h3>图片回传列表</h3>
+          <span class="table-count">{{ returnImages.length }} 条记录</span>
+        </div>
+        <div class="preview-content">
+          <el-table 
+            :data="returnImages" 
+            border 
+            stripe 
+            style="width: 100%"
+          >
+            <el-table-column type="index" width="50" label="序号"></el-table-column>
+            <el-table-column label="图片" width="80">
+              <template slot-scope="scope">
+                <el-image
+                  :src="scope.row"
+                  fit="cover"
+                  class="table-image"
+                >
+                  <div slot="error" class="image-slot">
+                    <i class="el-icon-picture-outline"></i>
+                  </div>
+                </el-image>
+              </template>
+            </el-table-column>
+            <el-table-column prop="url" label="图片URL" min-width="400">
+              <template slot-scope="scope">
+                <el-input
+                  :value="scope.row"
+                  readonly
+                  class="url-input"
+                >
+                  <template slot="append">
+                    <el-button @click="copyUrl(scope.row)" class="copy-button">
+                      <i class="el-icon-document-copy"></i> 复制
+                    </el-button>
+                  </template>
+                </el-input>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="120" fixed="right">
+              <template slot-scope="scope">
+                <el-button 
+                  type="primary" 
+                  size="small" 
+                  class="el-icon-view"
+                  @click="openImageUrl(scope.row)"
+                  title="打开"
+                ></el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div v-if="returnImages.length === 0" class="empty-state">
+            <el-empty description="暂无回传图片数据" />
           </div>
         </div>
       </div>
@@ -139,6 +224,9 @@
       <el-button type="warning" @click="initData" class="init-button">
         <i class="el-icon-remove-outline"></i> 数据初始化
       </el-button>
+      <el-button type="primary" @click="refreshData" class="refresh-button">
+        <i class="el-icon-refresh"></i> 刷新
+      </el-button>
     </div>
   </div>
 </template>
@@ -152,10 +240,16 @@ export default {
   data() {
     return {
       uploadedImages: [],
+      returnImages: [],
       uploading: false,
       uploadProgress: 0,
       uploadStatus: '',
-      shareUrl: ''
+      shareUrl: '',
+      config: {
+        UploadImages: [],
+        ReturnImages: []
+      },
+      loading: false
     };
   },
   mounted() {
@@ -163,8 +257,36 @@ export default {
     // 使用主机的局域网IP地址，确保虚拟机能够访问
     // 请根据实际情况修改为你的主机局域网IP
     this.shareUrl = `http://10.12.52.1:8888/sysFile/url-list`;
+    // 获取配置
+    this.getConfig();
   },
   methods: {
+    /**
+     * 获取配置
+     */
+    getConfig() {
+      this.loading = true;
+      axios.get('/sysFile/config.json')
+        .then(response => {
+          if (response.data.code === "200") {
+            this.config = response.data.data;
+            // 渲染回传图片
+            this.uploadedImages = this.config.UploadImages || [];
+            // 渲染图片回传列表
+            this.returnImages = this.config.ReturnImages || [];
+          } else {
+            this.$message.error('获取配置失败：' + (response.data.msg || '未知错误'));
+          }
+        })
+        .catch(error => {
+          this.$message.error('获取配置失败：' + (error.message || '网络错误'));
+          console.error('获取配置失败:', error);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+
     /**
      * 上传前校验
      * @param file 上传的文件
@@ -304,9 +426,17 @@ export default {
       this.uploadProgress = 0;
       this.uploadStatus = '';
       
+      // 确定上传地址
+      let uploadUrl = '/sysFile/upload';
+      if (this.config.UploadImages && this.config.UploadImages.length > 0) {
+        // 使用配置中的上传地址
+        const index = this.uploadedImages.length;
+        uploadUrl = this.config.UploadImages[index] || uploadUrl;
+      }
+      
       // 使用后端的SysFileController接口
       axios({
-        url: '/sysFile/upload',
+        url: uploadUrl,
         method: 'post',
         data: formData,
         headers: {
@@ -332,6 +462,8 @@ export default {
           // SysFileController的upload方法返回的是直接的URL字符串
           if (typeof responseData === 'string' && responseData.startsWith('http')) {
             this.uploadedImages.push(responseData);
+            // 添加到配置中（使用完整的图片URL作为上传地址）
+            this.addImageToConfig(responseData, responseData);
             this.$message.success('图片上传成功！');
             options.onSuccess({ url: responseData });
           } else {
@@ -350,6 +482,27 @@ export default {
         this.$message.error('上传失败：' + (error.message || '未知错误'));
         console.error('上传失败:', error);
         options.onError(error);
+      });
+    },
+    
+    /**
+     * 添加图片到配置
+     * @param uploadUrl 上传地址
+     * @param returnUrl 回传地址
+     */
+    addImageToConfig(uploadUrl, returnUrl) {
+      axios.post('/sysFile/addImage', {
+        uploadUrl: uploadUrl,
+        returnUrl: returnUrl
+      }).then(response => {
+        if (response.data.code === "200") {
+          // 更新配置
+          this.config = response.data.data;
+          // 更新图片回传列表
+          this.returnImages = this.config.ReturnImages || [];
+        }
+      }).catch(error => {
+        console.error('添加图片到配置失败:', error);
       });
     },
     
@@ -376,11 +529,24 @@ export default {
         axios.post('/sysFile/clear-url-list')
           .then(response => {
             if (response.data.code === "200") {
-              this.$message.success('数据初始化成功！');
-              // 同时清空本地图片列表
-              this.uploadedImages = [];
+              // 清空配置
+              return axios.post('/sysFile/clearConfig');
             } else {
-              this.$message.error('数据初始化失败：' + (response.data.msg || '未知错误'));
+              throw new Error('清空URL列表失败');
+            }
+          })
+          .then(response => {
+            if (response.data.code === "200") {
+              this.$message.success('数据初始化成功！');
+              // 同时清空本地图片列表和配置
+              this.uploadedImages = [];
+              this.returnImages = [];
+              this.config = {
+                UploadImages: [],
+                ReturnImages: []
+              };
+            } else {
+              this.$message.error('清空配置失败：' + (response.data.msg || '未知错误'));
             }
           })
           .catch(error => {
@@ -390,6 +556,14 @@ export default {
       }).catch(() => {
         // 取消操作
       });
+    },
+    
+    /**
+     * 刷新数据
+     */
+    refreshData() {
+      this.$message.info('正在刷新数据...');
+      this.getConfig();
     }
   }
 }
@@ -593,83 +767,442 @@ export default {
 
 .upload-progress {
   margin: 20px 0;
-  height: 8px;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
 }
 
-/* 预览区域 */
+.upload-progress .el-progress-bar__inner {
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--primary-color), #3a8ee6);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(64, 158, 255, 0.5);
+}
+
+.upload-progress .el-progress__text {
+  color: var(--text-color-secondary);
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* 表格区域 */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color-light);
+  background: var(--bg-color-tertiary);
+}
+
+.table-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-color-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-count {
+  font-size: 14px;
+  color: var(--text-color-secondary);
+  background: var(--bg-color-secondary);
+  padding: 5px 12px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color-light);
+}
+
+.table-count:hover {
+  background: var(--primary-color);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.4);
+}
+
 .preview-content {
   padding: var(--spacing-lg);
 }
 
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--spacing-md);
-  width: 100%;
-}
-
-.image-item {
-  background: var(--bg-color-secondary);
-  padding: var(--spacing-md);
+.el-table {
   border-radius: var(--border-radius);
+  overflow: hidden;
   box-shadow: var(--box-shadow-light);
   transition: all 0.3s ease;
   border: 1px solid var(--border-color-light);
 }
 
-.image-item:hover {
+.el-table:hover {
   box-shadow: var(--box-shadow);
   border-color: var(--border-color);
-  transform: translateY(-3px);
 }
 
-.preview-image {
-  width: 100%;
-  height: 200px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow-light);
-  margin-bottom: var(--spacing-md);
+.el-table th {
+  background-color: var(--bg-color-tertiary) !important;
+  font-weight: 600;
+  color: var(--text-color-primary) !important;
+  border-bottom: 1px solid var(--border-color-light) !important;
+}
+
+.el-table tr:hover {
+  background-color: rgba(64, 158, 255, 0.05) !important;
+  transition: background-color 0.3s ease;
+}
+
+.el-table td {
+  border-bottom: 1px solid var(--border-color-light) !important;
   transition: all 0.3s ease;
+}
+
+.table-image {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius);
+  object-fit: cover;
+  transition: all 0.3s ease;
+  cursor: pointer;
   border: 1px solid var(--border-color-light);
 }
 
-.preview-image:hover {
-  transform: scale(1.02);
-  box-shadow: var(--box-shadow);
-}
-
-.image-url {
-  width: 100%;
-}
-
-.image-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.image-actions .el-button {
-  flex: 1;
-  transition: all 0.3s ease;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border-color-light);
-}
-
-.image-actions .el-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--box-shadow);
-}
-
-.remove-button:hover {
-  box-shadow: 0 4px 12px rgba(255, 73, 73, 0.4);
-}
-
-.open-button:hover {
-  box-shadow: 0 4px 12px rgba(103, 194, 58, 0.4);
+.table-image:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-color: var(--primary-color);
 }
 
 .url-input {
-  margin-bottom: 12px;
+  width: 100%;
+  border-radius: var(--border-radius);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color-light);
+}
+
+.url-input:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+.copy-button {
+  min-width: 80px;
+  transition: all 0.3s ease;
+  border-radius: var(--border-radius);
+}
+
+.copy-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.4);
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-color-secondary);
+  background-color: var(--bg-color-tertiary);
+  border-radius: var(--border-radius);
+  margin-top: 20px;
+  border: 1px solid var(--border-color-light);
+}
+
+/* 共享访问区域 */
+.share-content {
+  padding: var(--spacing-lg);
+}
+
+.share-description {
+  font-size: 14px;
+  color: var(--text-color-secondary);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.share-url-input {
+  margin-bottom: 16px;
+  border-radius: var(--border-radius);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color-light);
+}
+
+.share-url-input:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+.share-button {
+  margin-top: 8px;
+  transition: all 0.3s ease;
+  border-radius: var(--border-radius);
+  background: var(--success-gradient);
+  border: none;
+}
+
+.share-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(41, 182, 141, 0.4);
+}
+
+/* 操作按钮区域 */
+.action-section {
+  display: flex;
+  gap: 12px;
+  margin-top: var(--spacing-lg);
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  padding: var(--spacing-lg);
+  background: var(--bg-color-secondary);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--box-shadow-light);
+  border: 1px solid var(--border-color-light);
+}
+
+.reset-button,
+.init-button,
+.refresh-button {
+  min-width: 120px;
+  transition: all 0.3s ease;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+}
+
+.reset-button {
+  background: var(--bg-color-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-color-primary);
+}
+
+.reset-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.init-button {
+  background: var(--warning-gradient);
+  border: none;
+  color: white;
+}
+
+.init-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+.refresh-button {
+  background: var(--primary-gradient);
+  border: none;
+  color: white;
+}
+
+.refresh-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.4);
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .header-stats {
+    width: 100%;
+    justify-content: space-around;
+  }
+  
+  .action-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .upload-area {
+    padding: 30px 15px;
+  }
+  
+  .section-card {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .el-table {
+    font-size: 14px;
+  }
+  
+  .table-image {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* 图片回传列表样式 */
+.return-section {
+  margin-bottom: var(--spacing-lg);
+  animation: fadeIn 0.8s ease-out;
+}
+
+.return-section .section-card {
+  background: var(--bg-color-secondary);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--box-shadow-light);
+  overflow: hidden;
+  border: 1px solid var(--border-color-light);
+  transition: all 0.3s ease;
+}
+
+.return-section .section-card:hover {
+  box-shadow: var(--box-shadow);
+  border-color: var(--border-color);
+}
+
+.return-section .section-header {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color-light);
+  display: flex;
+  align-items: center;
+  background: var(--bg-color-tertiary);
+}
+
+.return-section .section-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-color-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 预览区域 */
+.preview-content {
+  padding: 0;
+}
+
+/* 表格样式 */
+.table-header {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-color-tertiary);
+}
+
+.table-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-color-primary);
+}
+
+.table-count {
+  font-size: 0.9rem;
+  color: var(--text-color-regular);
+  background: var(--bg-color-tertiary);
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color-light);
+}
+
+.preview-content .el-table {
+  border-radius: 0;
+  background: var(--bg-color-secondary);
+}
+
+.preview-content .el-table th {
+  background: var(--bg-color-tertiary);
+  font-weight: 600;
+  color: var(--text-color-primary);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.preview-content .el-table td {
+  color: var(--text-color-regular);
+  border-bottom: 1px solid var(--border-color-lighter);
+  padding: 12px;
+}
+
+.preview-content .el-table tr:hover {
+  background-color: var(--bg-color-tertiary);
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 60px 0;
+  text-align: center;
+}
+
+/* URL输入框 */
+.url-input {
   border-radius: var(--border-radius);
   border: 1px solid var(--border-color-light);
 }
@@ -682,6 +1215,27 @@ export default {
 .copy-button:hover {
   color: var(--primary-color);
   border-color: var(--primary-color);
+}
+
+/* 表格中的图片样式 */
+.table-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color-light);
+}
+
+.image-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--bg-color-tertiary);
+  color: var(--text-color-secondary);
+  font-size: 20px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color-light);
 }
 
 /* 共享访问 */

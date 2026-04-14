@@ -9,11 +9,14 @@ import com.graduate.framework.annotation.NoAuth;
 import com.graduate.framework.common.Result;
 import com.graduate.framework.entity.SysFile;
 import com.graduate.framework.service.SysFileService;
+import com.graduate.framework.utils.ConfigUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.ArrayList;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +26,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -31,6 +35,9 @@ public class SysFileController {
 
     @Autowired
     private SysFileService sysFileService;
+
+    @Autowired
+    private ConfigUtil configUtil;
 
     @Value("${files.upload.path}")
     private String fileUploadPath;
@@ -125,22 +132,8 @@ public class SysFileController {
         sysFile.setMd5(md5);
         sysFileService.save(sysFile);
         
-        // 将URL追加写入文件
-        try {
-            File urlListFile = new File(fileUploadPath + File.separator + "url_list.txt");
-            // 使用BufferedWriter提升效率
-            try (java.io.BufferedWriter writer = new java.io.BufferedWriter(
-                    new java.io.OutputStreamWriter(
-                            new java.io.FileOutputStream(urlListFile, true), // 追加模式
-                            java.nio.charset.StandardCharsets.UTF_8
-                    )
-            )) {
-                writer.write(url);
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // 上传地址的添加由前端通过 addImageToConfig 方法处理
+        // 这里不再重复添加，避免出现重复 URL 的情况
         
         return url;
     }
@@ -213,31 +206,21 @@ public class SysFileController {
     
     /**
      * 获取URL列表
-     * @param response HttpServletResponse
-     * @throws IOException IOException
+     * @return Map<String, Object>
      */
     @GetMapping("/url-list")
     @NoAuth
-    public void getUrlList(HttpServletResponse response) throws IOException {
-        // 设置响应头
-        response.setContentType("text/plain; charset=UTF-8");
-        response.setHeader("Content-Disposition", "inline; filename=url_list.txt");
-
-        // 读取URL列表文件
-        File urlListFile = new File(fileUploadPath + File.separator + "url_list.txt");
-        if (!urlListFile.exists()) {
-            response.getWriter().write("暂无URL记录");
-            return;
-        }
-
-        // 读取文件内容并写入响应
-        try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(urlListFile), java.nio.charset.StandardCharsets.UTF_8));
-             java.io.BufferedWriter writer = new java.io.BufferedWriter(new java.io.OutputStreamWriter(response.getOutputStream(), java.nio.charset.StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                writer.write(line);
-                writer.newLine();
-            }
+    public Map<String, Object> getUrlList() {
+        try {
+            // 获取配置
+            return configUtil.getConfig();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 返回空配置
+            Map<String, Object> emptyConfig = new java.util.HashMap<>();
+            emptyConfig.put("UploadImages", new java.util.ArrayList<String>());
+            emptyConfig.put("ReturnImages", new java.util.ArrayList<String>());
+            return emptyConfig;
         }
     }
     
@@ -249,6 +232,10 @@ public class SysFileController {
     @NoAuth
     public Result clearUrlList() {
         try {
+            // 清空配置文件
+            configUtil.clearConfig();
+            
+            // 清空 url_list.txt 文件
             File urlListFile = new File(fileUploadPath + File.separator + "url_list.txt");
             if (urlListFile.exists()) {
                 // 清空文件内容
@@ -265,6 +252,79 @@ public class SysFileController {
         } catch (Exception e) {
             e.printStackTrace();
             return Result.error("500", "清空URL列表失败");
+        }
+    }
+    
+    /**
+     * 获取配置
+     * @return Result
+     */
+    @GetMapping("/config.json")
+    @NoAuth
+    public Result getConfig() {
+        try {
+            Map<String, Object> config = configUtil.getConfig();
+            return Result.success(config);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("500", "配置读取失败");
+        }
+    }
+    
+    /**
+     * 更新配置
+     * @param config 配置对象
+     * @return Result
+     */
+    @PostMapping("/updateConfig")
+    @NoAuth
+    public Result updateConfig(@RequestBody Map<String, Object> config) {
+        try {
+            Map<String, Object> updatedConfig = configUtil.updateConfig(config);
+            return Result.success(updatedConfig);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("500", "更新配置失败");
+        }
+    }
+    
+    /**
+     * 添加图片地址
+     * @param request 请求体
+     * @return Result
+     */
+    @PostMapping("/addImage")
+    @NoAuth
+    public Result addImage(@RequestBody Map<String, String> request) {
+        try {
+            String uploadUrl = request.get("uploadUrl");
+            String returnUrl = request.get("returnUrl");
+            
+            if (uploadUrl == null || returnUrl == null) {
+                return Result.error("400", "参数缺失");
+            }
+            
+            Map<String, Object> updatedConfig = configUtil.addImage(uploadUrl, returnUrl);
+            return Result.success(updatedConfig);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("500", "添加图片地址失败");
+        }
+    }
+    
+    /**
+     * 清空配置
+     * @return Result
+     */
+    @PostMapping("/clearConfig")
+    @NoAuth
+    public Result clearConfig() {
+        try {
+            Map<String, Object> config = configUtil.clearConfig();
+            return Result.success(config);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("500", "清空配置失败");
         }
     }
 }
