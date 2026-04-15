@@ -919,4 +919,67 @@ CREATE TABLE `warehouse`  (
 -- Records of warehouse
 -- ----------------------------
 
+-- 区块链农产品溯源系统仓储/发运记录（用于库存与溯源联动展示）
+INSERT INTO `warehouse` VALUES ('W001', 'BLOCKCHAIN_20230901_001', '500', '2023-09-06', '黑龙江五常', '有机大米', '2023-09-07');
+INSERT INTO `warehouse` VALUES ('W002', 'BLOCKCHAIN_20230902_002', '320', '2023-09-07', '山东寿光', '绿色蔬菜', '2023-09-08');
+INSERT INTO `warehouse` VALUES ('W003', 'BLOCKCHAIN_20230903_003', '260', '2023-09-08', '陕西洛川', '生态水果', '2023-09-09');
+INSERT INTO `warehouse` VALUES ('W004', 'BLOCKCHAIN_20230904_004', '180', '2023-09-09', '河南漯河', '有机猪肉', '2023-09-10');
+INSERT INTO `warehouse` VALUES ('W005', 'BLOCKCHAIN_20230905_005', '400', '2023-09-10', '河北唐山', '有机鸡蛋', '2023-09-11');
+INSERT INTO `warehouse` VALUES ('W006', 'BLOCKCHAIN_20230911_006', '210', '2023-09-12', '新疆阿克苏', '阿克苏苹果', '2023-09-13');
+INSERT INTO `warehouse` VALUES ('W007', 'BLOCKCHAIN_20230912_007', '150', '2023-09-13', '云南普洱', '有机茶叶', '2023-09-14');
+INSERT INTO `warehouse` VALUES ('W008', 'BLOCKCHAIN_20230913_008', '360', '2023-09-14', '内蒙古锡林郭勒', '草原牛肉', '2023-09-15');
+INSERT INTO `warehouse` VALUES ('W009', 'BLOCKCHAIN_20230914_009', '280', '2023-09-15', '四川蒲江', '蒲江猕猴桃', '2023-09-16');
+INSERT INTO `warehouse` VALUES ('W010', 'BLOCKCHAIN_20230915_010', '420', '2023-09-16', '福建平和', '平和蜜柚', '2023-09-17');
+INSERT INTO `warehouse` VALUES ('W011', 'BLOCKCHAIN_20230916_011', '190', '2023-09-17', '辽宁盘锦', '盘锦大米', '2023-09-18');
+INSERT INTO `warehouse` VALUES ('W012', 'BLOCKCHAIN_20230917_012', '230', '2023-09-18', '山东烟台', '烟台苹果', '2023-09-19');
+
+-- ----------------------------
+-- Extra Records of product
+-- ----------------------------
+-- 补充更多产品基础数据（覆盖粮食/蔬果/肉蛋/茶叶等）
+INSERT INTO `product` VALUES ('P006', '阿克苏苹果', '新疆阿克苏', '阿克苏红旗果业有限公司', 'BLOCKCHAIN_20230911_006');
+INSERT INTO `product` VALUES ('P007', '有机茶叶', '云南普洱', '普洱云岭茶业合作社', 'BLOCKCHAIN_20230912_007');
+INSERT INTO `product` VALUES ('P008', '草原牛肉', '内蒙古锡林郭勒', '锡林郭勒牧场有限公司', 'BLOCKCHAIN_20230913_008');
+INSERT INTO `product` VALUES ('P009', '蒲江猕猴桃', '四川蒲江', '蒲江猕猴桃种植基地', 'BLOCKCHAIN_20230914_009');
+INSERT INTO `product` VALUES ('P010', '平和蜜柚', '福建平和', '平和蜜柚产业联合社', 'BLOCKCHAIN_20230915_010');
+INSERT INTO `product` VALUES ('P011', '盘锦大米', '辽宁盘锦', '盘锦稻米产业园', 'BLOCKCHAIN_20230916_011');
+INSERT INTO `product` VALUES ('P012', '烟台苹果', '山东烟台', '烟台果品深加工厂', 'BLOCKCHAIN_20230917_012');
+INSERT INTO `product` VALUES ('P013', '赣南脐橙', '江西赣州', '赣南脐橙合作社', 'BLOCKCHAIN_20230918_013');
+INSERT INTO `product` VALUES ('P014', '东北玉米', '吉林长春', '长春粮食加工厂', 'BLOCKCHAIN_20230919_014');
+INSERT INTO `product` VALUES ('P015', '宁夏枸杞', '宁夏中宁', '中宁枸杞种植基地', 'BLOCKCHAIN_20230920_015');
+INSERT INTO `product` VALUES ('P016', '阳澄湖大闸蟹', '江苏苏州', '阳澄湖水产养殖场', 'BLOCKCHAIN_20230921_016');
+INSERT INTO `product` VALUES ('P017', '海南芒果', '海南三亚', '三亚热带果园', 'BLOCKCHAIN_20230922_017');
+INSERT INTO `product` VALUES ('P018', '宁波海鲜干货', '浙江宁波', '宁波海产加工厂', 'BLOCKCHAIN_20230923_018');
+INSERT INTO `product` VALUES ('P019', '高原牦牛肉', '青海玉树', '玉树高原牧场', 'BLOCKCHAIN_20230924_019');
+INSERT INTO `product` VALUES ('P020', '有机西红柿', '山东寿光', '寿光绿色蔬菜基地', 'BLOCKCHAIN_20230925_020');
+
+-- ----------------------------
+-- Extra Records of notice
+-- ----------------------------
+INSERT INTO `notice` VALUES (8, '溯源数据上链规范（试行）', '为确保数据一致性与可核验性，即日起溯源环节需按“种植/加工/仓储/物流/销售/监管”六段式提交并上链存证。', 'admin', '2023-09-20 09:10:00');
+INSERT INTO `notice` VALUES (9, '仓储温湿度异常告警规则上线', '新增冷链仓储温湿度异常告警规则：温度超出 2°C～8°C 或湿度超出 60%～85% 将触发告警并记录链上事件。', 'admin', '2023-09-21 10:30:00');
+
+-- ----------------------------
+-- Extra Records of sys_user
+-- ----------------------------
+-- 增加多角色用户，头像使用 /file 静态资源（避免 sysFile URL 失效导致不显示）
+INSERT INTO `sys_user` VALUES (84, 'operator', '123456', '运营人员', '山东寿光', 'operator@example.com', '13800000001', 10, '2023-09-03 09:12:00', 'http://localhost:8888/file/农产品.png');
+INSERT INTO `sys_user` VALUES (85, 'auditor', '123456', '监管审核', '北京市海淀区', 'auditor@example.com', '13800000002', 10, '2023-09-03 10:20:00', 'http://localhost:8888/file/公告.png');
+INSERT INTO `sys_user` VALUES (86, 'warehouse_admin', '123456', '仓储管理员', '黑龙江五常', 'warehouse@example.com', '13800000003', 10, '2023-09-03 11:05:00', 'http://localhost:8888/file/库存.png');
+INSERT INTO `sys_user` VALUES (87, 'trace_admin', '123456', '溯源管理员', '河南漯河', 'trace@example.com', '13800000004', 10, '2023-09-03 11:28:00', 'http://localhost:8888/file/溯源.png');
+INSERT INTO `sys_user` VALUES (88, 'demo_admin', '123456', '演示管理员', '上海市浦东新区', 'demo_admin@example.com', '13800000005', 9, '2023-09-03 13:00:00', 'http://localhost:8888/file/主页.png');
+
+-- ----------------------------
+-- Extra Records of sys_log
+-- ----------------------------
+INSERT INTO `sys_log` VALUES (336, 'admin', '新增产品：阿克苏苹果（上链登记）', '新增', '2023-09-11 09:18:10');
+INSERT INTO `sys_log` VALUES (337, 'admin', '新增产品：有机茶叶（上链登记）', '新增', '2023-09-12 09:25:34');
+INSERT INTO `sys_log` VALUES (338, 'warehouse_admin', '新增仓储记录：W006（入库/发运）', '新增', '2023-09-12 15:03:20');
+INSERT INTO `sys_log` VALUES (339, 'warehouse_admin', '新增仓储记录：W007（入库/发运）', '新增', '2023-09-13 14:41:05');
+INSERT INTO `sys_log` VALUES (340, 'operator', '更新产品批次信息并上链存证', '修改', '2023-09-14 10:12:18');
+INSERT INTO `sys_log` VALUES (341, 'trace_admin', '消费者溯源查询：BLOCKCHAIN_20230914_009', '查询', '2023-09-14 18:22:41');
+INSERT INTO `sys_log` VALUES (342, 'trace_admin', '消费者溯源查询：BLOCKCHAIN_20230915_010', '查询', '2023-09-15 09:05:03');
+INSERT INTO `sys_log` VALUES (343, 'auditor', '审核通过：溯源数据上链规范（试行）公告发布', '新增', '2023-09-20 09:12:10');
+INSERT INTO `sys_log` VALUES (344, 'auditor', '触发告警：仓储温湿度异常（模拟）', '新增', '2023-09-21 10:35:22');
+
 SET FOREIGN_KEY_CHECKS = 1;

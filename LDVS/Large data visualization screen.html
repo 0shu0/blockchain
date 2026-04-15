@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>index</title>
+<script type="text/javascript" src="js/jquery.js"></script>
+<link rel="stylesheet" href="css/comon0.css">
+</head>
+	<script>
+	$(window).load(function(){  
+             $(".loading").fadeOut()
+            })  
+			
+/****/
+$(document).ready(function(){
+	var whei=$(window).width()
+	$("html").css({fontSize:whei/20})
+	$(window).resize(function(){
+		var whei=$(window).width()
+	 $("html").css({fontSize:whei/20})
+});
+	});
+	</script>
+	<script type="text/javascript" src="js/echarts.min.js"></script> 
+	<script language="JavaScript" src="js/js.js"></script> 
+<body>
+<div class="canvas" style="opacity: .2">
+	<iframe frameborder="0" src="js/index.html" style="width: 100%; height: 100%"></iframe>
+	</div>
+<div class="loading">
+  <div class="loadbox"> <img src="picture/loading.gif"> 页面加载中... </div>
+</div>
+<div class="head">
+  <h1>区块链农产品溯源管理驾驶舱</h1>
+  <div class="right-tools">
+    <div class="weather"><span id="showTime" class="show-time-panel"></span></div>
+    <div class="screen-controls">
+      <button id="fullscreenToggle" class="fullscreen-btn" type="button">全屏显示</button>
+    </div>
+  </div>
+	
+	<script>
+var t = null;
+    t = setTimeout(time,1000);//開始运行
+    function padZero(num) {
+      return num < 10 ? "0" + num : "" + num;
+    }
+    function time()
+    {
+       clearTimeout(t);//清除定时器
+       var dt = new Date();
+		var y=dt.getFullYear();
+		var mt=padZero(dt.getMonth()+1);
+		var day=padZero(dt.getDate());
+       var h=padZero(dt.getHours());//获取时
+       var m=padZero(dt.getMinutes());//获取分
+       var s=padZero(dt.getSeconds());//获取秒
+       var week = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"][dt.getDay()];
+       document.getElementById("showTime").innerHTML =
+         '<span class="datetime-group">' +
+           '<span class="date-line">'+ y + '年' + mt + '月' + day + '日</span>' +
+           '<span class="time-line">' + h + ':' + m + ':' + s + '</span>' +
+         '</span>' +
+         '<span class="week-line">' + week + '</span>';
+       t = setTimeout(time,1000); //设定定时器，循环运行     
+    } 
+
+    function isFullscreenMode() {
+      return !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement
+      );
+    }
+
+    function updateFullscreenButton() {
+      var btn = document.getElementById("fullscreenToggle");
+      if (!btn) return;
+      var inFullscreen = isFullscreenMode();
+      btn.innerHTML = inFullscreen ? "退出全屏" : "全屏显示";
+      document.body.classList.toggle("is-fullscreen", inFullscreen);
+    }
+
+    function toggleFullscreen() {
+      var docEl = document.documentElement;
+      if (!isFullscreenMode()) {
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen();
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        } else if (docEl.msRequestFullscreen) {
+          docEl.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
+    }
+
+    function initFullscreenToggle() {
+      var btn = document.getElementById("fullscreenToggle");
+      if (!btn) return;
+      btn.addEventListener("click", toggleFullscreen);
+      document.addEventListener("fullscreenchange", updateFullscreenButton);
+      document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
+      document.addEventListener("msfullscreenchange", updateFullscreenButton);
+      updateFullscreenButton();
+    }
+
+    initFullscreenToggle();
+
+</script>
+	
+	
+</div>
+<div class="mainbox">
+  <ul class="clearfix">
+    <li>
+      <div class="boxall" style="height: 3.2rem">
+        <div class="alltitle">品类上链数量</div>
+        <div class="allnav" id="echart1"></div>
+        <div class="boxfoot"></div>
+      </div>
+      <div class="boxall" style="height: 3.2rem">
+        <div class="alltitle">省份仓储库存</div>
+        <div class="allnav" id="echart2"></div>
+        <div class="boxfoot"></div>
+      </div>
+      <div class="boxall" style="height: 3.2rem">
+        <div style="height:100%; width: 100%;">
+		  	<div class="sy" id="fb1"></div>
+				<div class="sy" id="fb2"></div>
+				<div class="sy" id="fb3"></div>
+		  </div>
+        <div class="boxfoot">
+			
+		  </div>
+      </div>
+    </li>
+    <li>
+      <div class="bar">
+        <div class="barbox">
+          <ul class="clearfix">
+            <li class="pulll_left counter">268419</li>
+            <li class="pulll_left counter">912407</li>
+          </ul>
+        </div>
+        <div class="barbox2">
+          <ul class="clearfix">
+            <li class="pulll_left">累计上链批次（次）</li>
+            <li class="pulll_left">累计溯源查询（次）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="map">
+        <div class="map1"><img src="picture/lbx.png"></div>
+        <div class="map2"><img src="picture/jt.png"></div>
+        <div class="map3"><img src="picture/map.png"></div>
+        <div class="map4" id="map_1"></div>
+      </div>
+    </li>
+    <li>
+          <div class="boxall" style="height:3.4rem">
+        <div class="alltitle">24小时链上操作趋势</div>
+        <div class="allnav" id="echart4"></div>
+        <div class="boxfoot"></div>
+      </div>
+      <div class="boxall" style="height: 3.2rem">
+        <div class="alltitle">冷链异常告警分布</div>
+        <div class="allnav" id="echart5"></div>
+        <div class="boxfoot"></div>
+      </div>
+      <div class="boxall" style="height: 3rem">
+        <div class="alltitle">溯源完成率TOP5</div>
+        <div class="allnav" id="echart6"></div>
+        <div class="boxfoot"></div>
+      </div>
+    </li>
+  </ul>
+</div>
+<div class="back"></div>
+
+
+<script type="text/javascript" src="js/china.js"></script> 
+<script type="text/javascript" src="js/area_echarts.js"></script> 
+</body>
+</html>

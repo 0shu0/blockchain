@@ -10,7 +10,7 @@
 
     <el-dropdown class="user-dropdown" @command="handleCommand">
       <div class="user-info">
-        <img :src="avatarUrl" class="user-avatar"/>
+        <img :src="avatarUrl" class="user-avatar" @error="handleAvatarLoadError"/>
         <el-tooltip  effect="dark" placement="top" :content="user.username">
           <span class="user-name">{{ truncatedText }}</span>
           <i class="el-icon-arrow-down user-arrow"></i>
@@ -45,6 +45,17 @@ export default {
     collapseBtnClass:String,
     user:Object
   },
+  data() {
+    return {
+      defaultAvatar: 'http://localhost:8888/file/猫.png',
+      avatarLoadFailed: false
+    };
+  },
+  watch: {
+    'user.headerUrl'() {
+      this.avatarLoadFailed = false;
+    }
+  },
   computed:{
     truncatedText() {
       if (this.user.username?.length > 8) {
@@ -56,16 +67,20 @@ export default {
       return this.$store.state.currentPathName;
     },
     avatarUrl() {
-      // 如果用户有设置头像，则使用用户的头像
-      if (this.user.headerUrl && this.user.headerUrl !== '') {
+      // 优先使用用户头像，加载失败后自动回退默认头像
+      if (!this.avatarLoadFailed && this.user.headerUrl && this.user.headerUrl !== '') {
         return this.user.headerUrl;
       }
-      // 否则使用默认头像，从file目录中选择
-      // 这里使用一个默认的头像路径，可以根据实际情况修改
-      return 'http://localhost:8888/file/猫.png';
+      return this.defaultAvatar;
     }
   },
   methods:{
+    handleAvatarLoadError(event) {
+      this.avatarLoadFailed = true;
+      if (event && event.target) {
+        event.target.src = this.defaultAvatar;
+      }
+    },
     collapse(){
       this.$emit('collapse')
     },
